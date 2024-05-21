@@ -56,7 +56,7 @@ indexed_documents = [Document(text=json.dumps(doc)) for doc in documents]
 
 index = VectorStoreIndex.from_documents(indexed_documents, storage_context=storage_context)
 
-query = "How many female students were enrolled in FBM in 2020?"
+query = "How many female students were enrolled in FBM in 2022"
 results = index.as_query_engine().query(query)
 
 print(f"Query: {query}")
