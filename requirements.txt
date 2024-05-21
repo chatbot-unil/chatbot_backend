@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+langchain
+llama_index
+openai
+matplotlib
+chromadb
