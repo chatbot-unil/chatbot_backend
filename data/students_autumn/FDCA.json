@@ -1,0 +1,104 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en FDCA depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2011": {
+            "FDCA": {
+                "femmes": 993,
+                "hommes": 645,
+                "etranger": 370,
+                "CH": 1268,
+                "total": 1638
+            }
+        },
+        "2012": {
+            "FDCA": {
+                "femmes": 1034,
+                "hommes": 677,
+                "etranger": 388,
+                "CH": 1323,
+                "total": 1711
+            }
+        },
+        "2013": {
+            "FDCA": {
+                "femmes": 1063,
+                "hommes": 710,
+                "etranger": 415,
+                "CH": 1358,
+                "total": 1773
+            }
+        },
+        "2014": {
+            "FDCA": {
+                "femmes": 1125,
+                "hommes": 772,
+                "etranger": 402,
+                "CH": 1495,
+                "total": 1897
+            }
+        },
+        "2015": {
+            "FDCA": {
+                "femmes": 1139,
+                "hommes": 780,
+                "etranger": 430,
+                "CH": 1489,
+                "total": 1919
+            }
+        },
+        "2016": {
+            "FDCA": {
+                "femmes": 1201,
+                "hommes": 808,
+                "etranger": 468,
+                "CH": 1541,
+                "total": 2009
+            }
+        },
+        "2017": {
+            "FDCA": {
+                "femmes": 1204,
+                "hommes": 789,
+                "etranger": 462,
+                "CH": 1531,
+                "total": 1993
+            }
+        },
+        "2018": {
+            "FDCA": {
+                "femmes": 1257,
+                "hommes": 772,
+                "etranger": 482,
+                "CH": 1547,
+                "total": 2029
+            }
+        },
+        "2019": {
+            "FDCA": {
+                "femmes": 1327,
+                "hommes": 791,
+                "etranger": 494,
+                "CH": 1624,
+                "total": 2118
+            }
+        },
+        "2020": {
+            "FDCA": {
+                "femmes": 1472,
+                "hommes": 807,
+                "etranger": 533,
+                "CH": 1746,
+                "total": 2279
+            }
+        },
+        "2021": {
+            "FDCA": {
+                "femmes": 1553,
+                "hommes": 810,
+                "etranger": 569,
+                "CH": 1794,
+                "total": 2363
+            }
+        }
+    }
+}

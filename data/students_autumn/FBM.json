@@ -1,0 +1,104 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en FBM depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2011": {
+            "FBM": {
+                "femmes": 1519,
+                "hommes": 1085,
+                "etranger": 556,
+                "CH": 2048,
+                "total": 2604
+            }
+        },
+        "2012": {
+            "FBM": {
+                "femmes": 1555,
+                "hommes": 1170,
+                "etranger": 626,
+                "CH": 2099,
+                "total": 2725
+            }
+        },
+        "2013": {
+            "FBM": {
+                "femmes": 1645,
+                "hommes": 1209,
+                "etranger": 692,
+                "CH": 2162,
+                "total": 2854
+            }
+        },
+        "2014": {
+            "FBM": {
+                "femmes": 1699,
+                "hommes": 1270,
+                "etranger": 734,
+                "CH": 2235,
+                "total": 2969
+            }
+        },
+        "2015": {
+            "FBM": {
+                "femmes": 1735,
+                "hommes": 1288,
+                "etranger": 750,
+                "CH": 2273,
+                "total": 3023
+            }
+        },
+        "2016": {
+            "FBM": {
+                "femmes": 1911,
+                "hommes": 1309,
+                "etranger": 792,
+                "CH": 2428,
+                "total": 3220
+            }
+        },
+        "2017": {
+            "FBM": {
+                "femmes": 1993,
+                "hommes": 1375,
+                "etranger": 858,
+                "CH": 2510,
+                "total": 3368
+            }
+        },
+        "2018": {
+            "FBM": {
+                "femmes": 2112,
+                "hommes": 1369,
+                "etranger": 869,
+                "CH": 2612,
+                "total": 3481
+            }
+        },
+        "2019": {
+            "FBM": {
+                "femmes": 2250,
+                "hommes": 1438,
+                "etranger": 905,
+                "CH": 2783,
+                "total": 3688
+            }
+        },
+        "2020": {
+            "FBM": {
+                "femmes": 2477,
+                "hommes": 1506,
+                "etranger": 979,
+                "CH": 3004,
+                "total": 3983
+            }
+        },
+        "2021": {
+            "FBM": {
+                "femmes": 2578,
+                "hommes": 1530,
+                "etranger": 1039,
+                "CH": 3069,
+                "total": 4108
+            }
+        }
+    }
+}

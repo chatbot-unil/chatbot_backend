@@ -1,0 +1,86 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en FCUE depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2013": {
+            "FCUE": {
+                "femmes": 51,
+                "hommes": 60,
+                "etranger": 72,
+                "CH": 39,
+                "total": 111
+            }
+        },
+        "2014": {
+            "FCUE": {
+                "femmes": 137,
+                "hommes": 175,
+                "etranger": 154,
+                "CH": 158,
+                "total": 312
+            }
+        },
+        "2015": {
+            "FCUE": {
+                "femmes": 117,
+                "hommes": 179,
+                "etranger": 112,
+                "CH": 184,
+                "total": 296
+            }
+        },
+        "2016": {
+            "FCUE": {
+                "femmes": 110,
+                "hommes": 175,
+                "etranger": 140,
+                "CH": 145,
+                "total": 285
+            }
+        },
+        "2017": {
+            "FCUE": {
+                "femmes": 125,
+                "hommes": 169,
+                "etranger": 126,
+                "CH": 168,
+                "total": 294
+            }
+        },
+        "2018": {
+            "FCUE": {
+                "femmes": 179,
+                "hommes": 143,
+                "etranger": 121,
+                "CH": 201,
+                "total": 322
+            }
+        },
+        "2019": {
+            "FCUE": {
+                "femmes": 302,
+                "hommes": 156,
+                "etranger": 156,
+                "CH": 302,
+                "total": 458
+            }
+        },
+        "2020": {
+            "FCUE": {
+                "femmes": 362,
+                "hommes": 162,
+                "etranger": 186,
+                "CH": 338,
+                "total": 524
+            }
+        },
+        "2021": {
+            "FCUE": {
+                "femmes": 377,
+                "hommes": 158,
+                "etranger": 205,
+                "CH": 330,
+                "total": 535
+            }
+        }
+    }
+}

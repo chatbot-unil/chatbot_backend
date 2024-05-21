@@ -1,0 +1,104 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en HEC depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2011": {
+            "HEC": {
+                "femmes": 828,
+                "hommes": 1493,
+                "etranger": 908,
+                "CH": 1413,
+                "total": 2321
+            }
+        },
+        "2012": {
+            "HEC": {
+                "femmes": 914,
+                "hommes": 1673,
+                "etranger": 1036,
+                "CH": 1551,
+                "total": 2587
+            }
+        },
+        "2013": {
+            "HEC": {
+                "femmes": 997,
+                "hommes": 1741,
+                "etranger": 1168,
+                "CH": 1570,
+                "total": 2738
+            }
+        },
+        "2014": {
+            "HEC": {
+                "femmes": 1111,
+                "hommes": 1800,
+                "etranger": 1217,
+                "CH": 1694,
+                "total": 2911
+            }
+        },
+        "2015": {
+            "HEC": {
+                "femmes": 1074,
+                "hommes": 1799,
+                "etranger": 1184,
+                "CH": 1689,
+                "total": 2873
+            }
+        },
+        "2016": {
+            "HEC": {
+                "femmes": 1032,
+                "hommes": 1867,
+                "etranger": 1196,
+                "CH": 1703,
+                "total": 2899
+            }
+        },
+        "2017": {
+            "HEC": {
+                "femmes": 1057,
+                "hommes": 1950,
+                "etranger": 1213,
+                "CH": 1794,
+                "total": 3007
+            }
+        },
+        "2018": {
+            "HEC": {
+                "femmes": 1077,
+                "hommes": 2010,
+                "etranger": 1166,
+                "CH": 1921,
+                "total": 3087
+            }
+        },
+        "2019": {
+            "HEC": {
+                "femmes": 1082,
+                "hommes": 2022,
+                "etranger": 1182,
+                "CH": 1922,
+                "total": 3104
+            }
+        },
+        "2020": {
+            "HEC": {
+                "femmes": 1201,
+                "hommes": 2105,
+                "etranger": 1241,
+                "CH": 2065,
+                "total": 3306
+            }
+        },
+        "2021": {
+            "HEC": {
+                "femmes": 1209,
+                "hommes": 2094,
+                "etranger": 1197,
+                "CH": 2106,
+                "total": 3303
+            }
+        }
+    }
+}
