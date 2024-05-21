@@ -17,7 +17,7 @@ chroma_port = os.getenv("CHROMADB_PORT")
 
 remote_db = chromadb.HttpClient(host=chroma_host, port=chroma_port)
 
-chroma_collection = remote_db.get_or_create_collection("quickstart")
+chroma_collection = remote_db.get_or_create_collection("students_autumn_2011_2021")
 
 vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 
