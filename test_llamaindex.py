@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import openai
 import chromadb
 import json
+import time
 
 load_dotenv()
 
@@ -56,8 +57,12 @@ indexed_documents = [Document(text=json.dumps(doc)) for doc in documents]
 
 index = VectorStoreIndex.from_documents(indexed_documents, storage_context=storage_context)
 
-query = "How many female students were enrolled in FBM in 2022"
+query = "Combien d'étudiants sont inscrits en 2021 à la Faculté des lettres ?"
+time_start = time.time()
 results = index.as_query_engine().query(query)
+time_end = time.time()
 
-print(f"Query: {query}")
-print(f"Results: {results}")
+print(f"Question: {query}")
+print(f"Resultats: {results}")
+
+print(f"Time taken: {round(time_end - time_start, 2)} seconds")

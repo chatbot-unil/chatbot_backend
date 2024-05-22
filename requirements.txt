@@ -1,7 +1,10 @@
 fastapi
 uvicorn
-langchain
-llama_index
+langchain-community
+langchain-openai
+llama-index
 openai
 matplotlib
 chromadb
+python-dotenv
+sentence-transformers
