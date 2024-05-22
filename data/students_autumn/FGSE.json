@@ -1,0 +1,104 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en FGSE depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2011": {
+            "FGSE": {
+                "femmes": 301,
+                "hommes": 433,
+                "etranger": 132,
+                "CH": 602,
+                "total": 734
+            }
+        },
+        "2012": {
+            "FGSE": {
+                "femmes": 331,
+                "hommes": 461,
+                "etranger": 146,
+                "CH": 646,
+                "total": 792
+            }
+        },
+        "2013": {
+            "FGSE": {
+                "femmes": 345,
+                "hommes": 468,
+                "etranger": 143,
+                "CH": 670,
+                "total": 813
+            }
+        },
+        "2014": {
+            "FGSE": {
+                "femmes": 382,
+                "hommes": 476,
+                "etranger": 158,
+                "CH": 700,
+                "total": 858
+            }
+        },
+        "2015": {
+            "FGSE": {
+                "femmes": 366,
+                "hommes": 486,
+                "etranger": 166,
+                "CH": 686,
+                "total": 852
+            }
+        },
+        "2016": {
+            "FGSE": {
+                "femmes": 346,
+                "hommes": 471,
+                "etranger": 170,
+                "CH": 647,
+                "total": 817
+            }
+        },
+        "2017": {
+            "FGSE": {
+                "femmes": 367,
+                "hommes": 512,
+                "etranger": 188,
+                "CH": 691,
+                "total": 879
+            }
+        },
+        "2018": {
+            "FGSE": {
+                "femmes": 382,
+                "hommes": 510,
+                "etranger": 188,
+                "CH": 704,
+                "total": 892
+            }
+        },
+        "2019": {
+            "FGSE": {
+                "femmes": 413,
+                "hommes": 499,
+                "etranger": 189,
+                "CH": 723,
+                "total": 912
+            }
+        },
+        "2020": {
+            "FGSE": {
+                "femmes": 445,
+                "hommes": 502,
+                "etranger": 194,
+                "CH": 753,
+                "total": 947
+            }
+        },
+        "2021": {
+            "FGSE": {
+                "femmes": 421,
+                "hommes": 494,
+                "etranger": 209,
+                "CH": 706,
+                "total": 915
+            }
+        }
+    }
+}

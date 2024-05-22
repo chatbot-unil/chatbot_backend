@@ -1,0 +1,104 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en Lettres depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2011": {
+            "Lettres": {
+                "femmes": 1538,
+                "hommes": 779,
+                "etranger": 562,
+                "CH": 1755,
+                "total": 2317
+            }
+        },
+        "2012": {
+            "Lettres": {
+                "femmes": 1512,
+                "hommes": 779,
+                "etranger": 579,
+                "CH": 1712,
+                "total": 2291
+            }
+        },
+        "2013": {
+            "Lettres": {
+                "femmes": 1476,
+                "hommes": 796,
+                "etranger": 597,
+                "CH": 1675,
+                "total": 2272
+            }
+        },
+        "2014": {
+            "Lettres": {
+                "femmes": 1442,
+                "hommes": 785,
+                "etranger": 576,
+                "CH": 1651,
+                "total": 2227
+            }
+        },
+        "2015": {
+            "Lettres": {
+                "femmes": 1429,
+                "hommes": 804,
+                "etranger": 569,
+                "CH": 1664,
+                "total": 2233
+            }
+        },
+        "2016": {
+            "Lettres": {
+                "femmes": 1363,
+                "hommes": 831,
+                "etranger": 583,
+                "CH": 1611,
+                "total": 2194
+            }
+        },
+        "2017": {
+            "Lettres": {
+                "femmes": 1402,
+                "hommes": 827,
+                "etranger": 565,
+                "CH": 1664,
+                "total": 2229
+            }
+        },
+        "2018": {
+            "Lettres": {
+                "femmes": 1426,
+                "hommes": 809,
+                "etranger": 554,
+                "CH": 1681,
+                "total": 2235
+            }
+        },
+        "2019": {
+            "Lettres": {
+                "femmes": 1422,
+                "hommes": 833,
+                "etranger": 548,
+                "CH": 1707,
+                "total": 2255
+            }
+        },
+        "2020": {
+            "Lettres": {
+                "femmes": 1462,
+                "hommes": 812,
+                "etranger": 541,
+                "CH": 1733,
+                "total": 2274
+            }
+        },
+        "2021": {
+            "Lettres": {
+                "femmes": 1396,
+                "hommes": 804,
+                "etranger": 477,
+                "CH": 1723,
+                "total": 2200
+            }
+        }
+    }
+}

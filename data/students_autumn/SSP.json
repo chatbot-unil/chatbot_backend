@@ -1,0 +1,104 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en SSP depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2011": {
+            "SSP": {
+                "femmes": 1584,
+                "hommes": 965,
+                "etranger": 416,
+                "CH": 2133,
+                "total": 2549
+            }
+        },
+        "2012": {
+            "SSP": {
+                "femmes": 1726,
+                "hommes": 1045,
+                "etranger": 486,
+                "CH": 2285,
+                "total": 2771
+            }
+        },
+        "2013": {
+            "SSP": {
+                "femmes": 1849,
+                "hommes": 1144,
+                "etranger": 542,
+                "CH": 2451,
+                "total": 2993
+            }
+        },
+        "2014": {
+            "SSP": {
+                "femmes": 1783,
+                "hommes": 1107,
+                "etranger": 528,
+                "CH": 2362,
+                "total": 2890
+            }
+        },
+        "2015": {
+            "SSP": {
+                "femmes": 1779,
+                "hommes": 1093,
+                "etranger": 503,
+                "CH": 2369,
+                "total": 2872
+            }
+        },
+        "2016": {
+            "SSP": {
+                "femmes": 1798,
+                "hommes": 1134,
+                "etranger": 531,
+                "CH": 2401,
+                "total": 2932
+            }
+        },
+        "2017": {
+            "SSP": {
+                "femmes": 1920,
+                "hommes": 1166,
+                "etranger": 547,
+                "CH": 2539,
+                "total": 3086
+            }
+        },
+        "2018": {
+            "SSP": {
+                "femmes": 1989,
+                "hommes": 1196,
+                "etranger": 555,
+                "CH": 2630,
+                "total": 3185
+            }
+        },
+        "2019": {
+            "SSP": {
+                "femmes": 2039,
+                "hommes": 1187,
+                "etranger": 564,
+                "CH": 2662,
+                "total": 3226
+            }
+        },
+        "2020": {
+            "SSP": {
+                "femmes": 2287,
+                "hommes": 1221,
+                "etranger": 604,
+                "CH": 2904,
+                "total": 3508
+            }
+        },
+        "2021": {
+            "SSP": {
+                "femmes": 2403,
+                "hommes": 1225,
+                "etranger": 666,
+                "CH": 2962,
+                "total": 3628
+            }
+        }
+    }
+}

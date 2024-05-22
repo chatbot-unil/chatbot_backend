@@ -1,0 +1,104 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en TOTAL depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2011": {
+            "TOTAL": {
+                "femmes": 6767,
+                "hommes": 5445,
+                "etranger": 2967,
+                "CH": 9275,
+                "total": 12242
+            }
+        },
+        "2012": {
+            "TOTAL": {
+                "femmes": 7111,
+                "hommes": 5844,
+                "etranger": 3288,
+                "CH": 9667,
+                "total": 12955
+            }
+        },
+        "2013": {
+            "TOTAL": {
+                "femmes": 7478,
+                "hommes": 6165,
+                "etranger": 3657,
+                "CH": 9986,
+                "total": 13643
+            }
+        },
+        "2014": {
+            "TOTAL": {
+                "femmes": 7736,
+                "hommes": 6429,
+                "etranger": 3799,
+                "CH": 10366,
+                "total": 14165
+            }
+        },
+        "2015": {
+            "TOTAL": {
+                "femmes": 7705,
+                "hommes": 6484,
+                "etranger": 3749,
+                "CH": 10440,
+                "total": 14189
+            }
+        },
+        "2016": {
+            "TOTAL": {
+                "femmes": 7827,
+                "hommes": 6648,
+                "etranger": 3915,
+                "CH": 10560,
+                "total": 14475
+            }
+        },
+        "2017": {
+            "TOTAL": {
+                "femmes": 8135,
+                "hommes": 6841,
+                "etranger": 3992,
+                "CH": 10984,
+                "total": 14976
+            }
+        },
+        "2018": {
+            "TOTAL": {
+                "femmes": 8480,
+                "hommes": 6854,
+                "etranger": 3967,
+                "CH": 11367,
+                "total": 15334
+            }
+        },
+        "2019": {
+            "TOTAL": {
+                "femmes": 8892,
+                "hommes": 6976,
+                "etranger": 4073,
+                "CH": 11795,
+                "total": 15868
+            }
+        },
+        "2020": {
+            "TOTAL": {
+                "femmes": 9758,
+                "hommes": 7161,
+                "etranger": 4311,
+                "CH": 12608,
+                "total": 16919
+            }
+        },
+        "2021": {
+            "TOTAL": {
+                "femmes": 9985,
+                "hommes": 7156,
+                "etranger": 4394,
+                "CH": 12747,
+                "total": 17141
+            }
+        }
+    }
+}

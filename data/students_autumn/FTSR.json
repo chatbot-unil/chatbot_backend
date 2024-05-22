@@ -1,0 +1,104 @@
+{
+    "context": "Ce document retrace les statistiques du nombres d'étudiant(nationalité, sexe, nationalité) inscrit au semestre d'automne en FTSR depuis 2012 a l'université de Lausanne.",
+    "data": {
+        "2011": {
+            "FTSR": {
+                "femmes": 34,
+                "hommes": 45,
+                "etranger": 23,
+                "CH": 56,
+                "total": 79
+            }
+        },
+        "2012": {
+            "FTSR": {
+                "femmes": 39,
+                "hommes": 39,
+                "etranger": 27,
+                "CH": 51,
+                "total": 78
+            }
+        },
+        "2013": {
+            "FTSR": {
+                "femmes": 52,
+                "hommes": 37,
+                "etranger": 28,
+                "CH": 61,
+                "total": 89
+            }
+        },
+        "2014": {
+            "FTSR": {
+                "femmes": 57,
+                "hommes": 44,
+                "etranger": 30,
+                "CH": 71,
+                "total": 101
+            }
+        },
+        "2015": {
+            "FTSR": {
+                "femmes": 66,
+                "hommes": 55,
+                "etranger": 35,
+                "CH": 86,
+                "total": 121
+            }
+        },
+        "2016": {
+            "FTSR": {
+                "femmes": 66,
+                "hommes": 53,
+                "etranger": 35,
+                "CH": 84,
+                "total": 119
+            }
+        },
+        "2017": {
+            "FTSR": {
+                "femmes": 67,
+                "hommes": 53,
+                "etranger": 33,
+                "CH": 87,
+                "total": 120
+            }
+        },
+        "2018": {
+            "FTSR": {
+                "femmes": 58,
+                "hommes": 45,
+                "etranger": 32,
+                "CH": 71,
+                "total": 103
+            }
+        },
+        "2019": {
+            "FTSR": {
+                "femmes": 57,
+                "hommes": 50,
+                "etranger": 35,
+                "CH": 72,
+                "total": 107
+            }
+        },
+        "2020": {
+            "FTSR": {
+                "femmes": 52,
+                "hommes": 46,
+                "etranger": 33,
+                "CH": 65,
+                "total": 98
+            }
+        },
+        "2021": {
+            "FTSR": {
+                "femmes": 48,
+                "hommes": 41,
+                "etranger": 32,
+                "CH": 57,
+                "total": 89
+            }
+        }
+    }
+}
