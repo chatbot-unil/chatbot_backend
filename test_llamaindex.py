@@ -24,42 +24,11 @@ vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 
 storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
-files = [
-    "data/students_autumn/FBM.json",
-    "data/students_autumn/FCUE.json",
-    "data/students_autumn/FDCA.json",
-    "data/students_autumn/FGSE.json",
-    "data/students_autumn/FTSR.json",
-    "data/students_autumn/HEC.json",
-    "data/students_autumn/Lettres.json",
-    "data/students_autumn/SSP.json",
-    "data/students_autumn/TOTAL.json",
-]
+index = VectorStoreIndex.from_vector_store(vector_store=vector_store, storage_context=storage_context)
 
-documents = []
-
-for file_path in files:
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-        context = data.get('context', '')
-        for year, content in data.get('data', {}).items():
-            for faculty, stats in content.items():
-                document = {
-                    "year": year,
-                    "faculty": faculty,
-                    "stats": stats,
-                    "context": context
-                }
-                documents.append(document)
-
-from llama_index.core import Document
-indexed_documents = [Document(text=json.dumps(doc)) for doc in documents]
-
-index = VectorStoreIndex.from_documents(indexed_documents, storage_context=storage_context)
-
-query = "Combien d'étudiants sont inscrits en 2021 à la Faculté des lettres ?"
+query = "Combien d'étudiants sont inscrits en 2014 à la Faculté des lettres ?"
 time_start = time.time()
-results = index.as_query_engine().query(query)
+results = index.as_query_engine(kwargs={"k": 10}).query(query)
 time_end = time.time()
 
 print(f"Question: {query}")

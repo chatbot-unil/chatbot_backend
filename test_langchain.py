@@ -18,62 +18,15 @@ load_dotenv()
 
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
-chroma_host = os.getenv("CHROMADB_HOST", "localhost")
-chroma_port = int(os.getenv("CHROMADB_PORT", "3003"))
+chroma_host = str(os.getenv("CHROMADB_HOST"))
+chroma_port = int(os.getenv("CHROMADB_PORT"))
 
-embedding_function = OpenAIEmbeddings()
+embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
 
 client = chromadb.HttpClient(host=chroma_host, port=chroma_port)
 collection = client.get_or_create_collection("students_autumn_2011_2021")
 
-files = [
-    "data/students_autumn/FBM.json",
-    "data/students_autumn/FCUE.json",
-    "data/students_autumn/FDCA.json",
-    "data/students_autumn/FGSE.json",
-    "data/students_autumn/FTSR.json",
-    "data/students_autumn/HEC.json",
-    "data/students_autumn/Lettres.json",
-    "data/students_autumn/SSP.json",
-    "data/students_autumn/TOTAL.json",
-]
-
-def process_json_files(file_paths):
-    documents = []
-
-    for file_path in file_paths:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            context = data.get('context', '')
-            for year, content in data.get('data', {}).items():
-                for faculty, stats in content.items():
-                    document_content = json.dumps({
-                        "year": year,
-                        "faculty": faculty,
-                        "stats": stats
-                    }, ensure_ascii=False)
-                    metadata = {
-                        "context": context,
-                        "year": year,
-                        "faculty": faculty
-                    }
-                    documents.append(Document(page_content=document_content, metadata=metadata))
-
-    for doc in documents:
-        collection.add(
-            ids=[str(uuid.uuid1())],
-            metadatas=doc.metadata,
-            documents=[doc.page_content]
-        )
-    
-    return documents
-
-documents = process_json_files(files)
-
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-texts = text_splitter.split_documents(documents)
-
-db = Chroma.from_documents(texts, embedding_function)
+db = Chroma(collection_name=collection.name, client=client, embedding_function=embedding_function)
 
 retriever = db.as_retriever(search_type="similarity", search_kwargs={"k":4})
 
