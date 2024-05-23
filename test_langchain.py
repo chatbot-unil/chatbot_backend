@@ -24,7 +24,7 @@ chroma_port = int(os.getenv("CHROMADB_PORT"))
 embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
 
 client = chromadb.HttpClient(host=chroma_host, port=chroma_port)
-collection = client.get_or_create_collection("students_autumn_2011_2021")
+collection = client.get_collection("students_autumn_2011_2021")
 
 db = Chroma(collection_name=collection.name, client=client, embedding_function=embedding_function)
 
