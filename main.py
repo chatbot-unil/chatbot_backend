@@ -60,6 +60,7 @@ def query_data(query: Query):
     time_start = time.time()
     result = retrieval_chain.invoke({"input": query.question})
     time_end = time.time()
+    print(result)
     return {
         "response": result['answer'],
         "time_taken": round(time_end - time_start, 2)
