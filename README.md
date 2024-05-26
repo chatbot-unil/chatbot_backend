@@ -17,3 +17,11 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Pour lancer le backend, il suffit de lancer la commande suivante :
+
+```bash
+uvicorn main:app --reload
+```
+
+## Utilisation
