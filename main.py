@@ -18,6 +18,10 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain.chains import create_history_aware_retriever
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.messages import AIMessage, HumanMessage
+from fastapi.middleware.cors import CORSMiddleware
+import socketio
+
 
 load_dotenv()
 
@@ -62,7 +66,6 @@ async def lifespan(app: FastAPI):
         "Tu as accès à une base de données contenant des informations sur les statistiques de l'Université. "
         "Si tu ne trouves pas la réponse dans les données tu dois le dire. "
         "essaie de répondre le plus précisément possible et de manière informative. "
-        "dans "
         "\n\n"
         "{context}"
     )
@@ -97,28 +100,97 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
+app_asgi = socketio.ASGIApp(sio, app)
+
+BotInitMessage = os.getenv("BOT_INIT_MESSAGE")
+
 class Query(BaseModel):
     question: str
     session_id: str
+    
+class InitSession(BaseModel):
+    session_id: str
+    initial_message: str
 
-@app.post("/query")
-def query_data(query: Query):
+class SessionHistory(BaseModel):
+    session_id: str
+    chat_history: dict
+
+def add_initial_message(session_id, initial_message):
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    store[session_id].messages.append(AIMessage(initial_message))
+
+def test_is_session_id(session_id):
+    return session_id in store
+
+# @app.post("/query")
+# async def query_data(query: Query):
+#     if not test_is_session_id(query.session_id):
+#         return {"error": "Session not found."}
+#     result = conversational_rag_chain.invoke(
+#         {"input": query.question},
+#         config={
+#             "configurable": {"session_id": query.session_id},
+#         },
+#     )
+#     return {
+#         "response": result['answer'],
+#     }
+
+@sio.event
+async def query(sid, query):
+    if not test_is_session_id(query['session_id']):
+        return {"error": "Session not found."}
     result = conversational_rag_chain.invoke(
-        {"input": query.question},
+        {"input": query['question']},
         config={
-            "configurable": {"session_id": query.session_id},
+            "configurable": {"session_id": query['session_id']},
         },
     )
-    print(result['chat_history'])
-    return {
-        "response": result['answer'],
-    }
+    await sio.emit('response', result['answer'], room=sid)  
 
-@app.post("/init_session")
-def init_session():
+# @app.get("/init_session")
+# async def init_session():
+#     session_id = str(uuid.uuid4())
+#     add_initial_message(session_id, BotInitMessage)
+#     return {
+#         "session_id": session_id,
+#         "initial_message": BotInitMessage,
+#     }
+
+@sio.event
+async def init(sid):
     session_id = str(uuid.uuid4())
-    return {"session_id": session_id}
+    add_initial_message(session_id, BotInitMessage)
+    await sio.emit('init', {'session_id': session_id, 'initial_message': BotInitMessage}, room=sid)
+
+@sio.event
+async def close_session(sid, session_id):
+    if test_is_session_id(session_id):
+        store.pop(session_id)
+        # TODO: save session history in database
+        await sio.emit('session_closed', {'session_id': session_id}, room=sid)
+
+@app.get("/get_session_history/{session_id}")
+async def get_session_history(session_id: str):
+    if not test_is_session_id(session_id):
+        return {"error": "Session not found."}
+    else:
+        return {
+            "session_id": session_id,
+            "chat_history": store[session_id].messages,
+        }
 
 @app.get("/")
-def read_root():
+async def read_root():
     return {"message": "Bienvenue sur l'API du chatbot de l'Université de Lausanne."}

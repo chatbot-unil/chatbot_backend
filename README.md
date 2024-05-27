@@ -18,10 +18,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Pour lancer le backend, il suffit de lancer la commande suivante :
+## Utilisation
+
+Le backend est accessible en développement sur le port 8000. Pour accéder au backend, il suffit de lancer un navigateur web et d'aller à l'adresse suivante : [http://localhost:8000](http://localhost:8000).
+
+Pour le démarer en development, il suffit de lancer la commande suivante :
 
 ```bash
 uvicorn main:app --reload
 ```
 
-## Utilisation
+## Documentation
