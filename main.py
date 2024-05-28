@@ -22,7 +22,6 @@ from langchain_core.messages import AIMessage, HumanMessage
 from fastapi.middleware.cors import CORSMiddleware
 import socketio
 
-
 load_dotenv()
 
 @asynccontextmanager
@@ -30,11 +29,11 @@ async def lifespan(app: FastAPI):
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
-    chroma_host = str(os.getenv("CHROMADB_HOST"))
+    chroma_host = os.getenv("CHROMADB_HOST")
     chroma_port = int(os.getenv("CHROMADB_PORT"))
-    
-    collection_name = str(os.getenv("CHROMADB_COLLECTION_NAME"))
-    
+
+    collection_name = os.getenv("CHROMADB_COLLECTION_NAME")
+
     embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
     global db, retriever, llm, prompt, document_chain, retrieval_chain, client, collection, system_prompt, contextualize_q_system_prompt, contextualize_q_prompt, history_aware_retriever, store, conversational_rag_chain
 
@@ -96,7 +95,7 @@ async def lifespan(app: FastAPI):
         history_messages_key="chat_history",
         output_messages_key="answer",
     )
-    
+
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -117,7 +116,7 @@ BotInitMessage = os.getenv("BOT_INIT_MESSAGE")
 class Query(BaseModel):
     question: str
     session_id: str
-    
+
 class InitSession(BaseModel):
     session_id: str
     initial_message: str
@@ -174,7 +173,7 @@ async def query(sid, query):
         await sio.emit('error', {'message': 'Session not found.'}, room=sid)
         return
     result = await query_bot(query)
-    await sio.emit('response', result['answer'], room=sid)  
+    await sio.emit('response', result['answer'], room=sid)
 
 @sio.event
 async def connect(sid, environ):
