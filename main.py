@@ -27,12 +27,12 @@ load_dotenv()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+    os.environ["OPENAI_API_KEY"] = str(os.getenv("OPENAI_API_KEY"))
 
-    chroma_host = os.getenv("CHROMADB_HOST")
-    chroma_port = int(os.getenv("CHROMADB_PORT"))
+    chroma_host = str(os.getenv("CHROMADB_HOST"))
+    chroma_port = int(str(os.getenv("CHROMADB_PORT")))
 
-    collection_name = os.getenv("CHROMADB_COLLECTION_NAME")
+    collection_name = str(os.getenv("CHROMADB_COLLECTION_NAME"))
 
     embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
     global db, retriever, llm, prompt, document_chain, retrieval_chain, client, collection, system_prompt, contextualize_q_system_prompt, contextualize_q_prompt, history_aware_retriever, store, conversational_rag_chain
@@ -125,15 +125,11 @@ class SessionHistory(BaseModel):
     session_id: str
     chat_history: dict
 
-def create_new_session():
+def create_new_session(initial_message):
     session_id = str(uuid.uuid4())
     store[session_id] = ChatMessageHistory()
-    return session_id
-
-def add_initial_message(session_id, initial_message):
-    if session_id not in store:
-        session_id = create_new_session()
     store[session_id].messages.append(AIMessage(initial_message))
+    return session_id
 
 def test_is_session_id(session_id):
     return session_id in store
@@ -158,7 +154,7 @@ def get_session_history(session_id):
     messages = store[session_id].messages
     return [serialize_message(msg) for msg in messages]
 
-async def query_bot(query):
+def query_bot(query):
     result = conversational_rag_chain.invoke(
         {"input": query['question']},
         config={
@@ -172,8 +168,8 @@ async def query(sid, query):
     if not test_is_session_id(query['session_id']):
         await sio.emit('error', {'message': 'Session not found.'}, room=sid)
         return
-    result = await query_bot(query)
-    await sio.emit('response', result['answer'], room=sid)
+    result = query_bot(query)
+    await sio.emit('response', result, room=sid)
 
 @sio.event
 async def connect(sid, environ):
@@ -181,8 +177,7 @@ async def connect(sid, environ):
 
 @sio.event
 async def init(sid):
-    session_id = create_new_session()
-    add_initial_message(session_id, BotInitMessage)
+    session_id = create_new_session(BotInitMessage)
     await sio.emit('session_init', {'session_id': session_id, 'initial_message': BotInitMessage}, room=sid)
 
 @sio.event
@@ -199,8 +194,7 @@ async def restore_session(sid, data):
         messages = get_session_history(session_id)
         await sio.emit('session_restored', {'session_id': session_id, 'chat_history': messages}, room=sid)
     else:
-        session_id = str(uuid.uuid4())
-        add_initial_message(session_id, BotInitMessage)
+        session_id = create_new_session(BotInitMessage)
         await sio.emit('session_init', {'session_id': session_id, 'initial_message': BotInitMessage}, room=sid)
 
 @app.get("/get_session_history/{session_id}")
