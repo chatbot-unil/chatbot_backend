@@ -42,7 +42,7 @@ async def lifespan(app: FastAPI):
     collection = client.get_collection(collection_name)
 
     db = Chroma(collection_name=collection.name, client=client, embedding_function=embedding_function)
-    retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 4})
+    retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 10})
     llm = ChatOpenAI(model_name="gpt-4o")
 
     history_context = (
@@ -66,6 +66,7 @@ async def lifespan(app: FastAPI):
         "Tu as accès à une base de données contenant des informations sur les statistiques de l'Université. "
         "Si tu ne trouves pas la réponse dans les données tu dois le dire. "
         "essaie de répondre le plus précisément possible et de manière informative. "
+        "evite toute représentation autre que du texte pur (pas latex, pas de markdown, pas de code). "
         "\n\n"
         "{context}"
     )
@@ -125,54 +126,65 @@ class SessionHistory(BaseModel):
     session_id: str
     chat_history: dict
 
+def create_new_session():
+    session_id = str(uuid.uuid4())
+    store[session_id] = ChatMessageHistory()
+    return session_id
+
 def add_initial_message(session_id, initial_message):
     if session_id not in store:
-        store[session_id] = ChatMessageHistory()
+        session_id = create_new_session()
     store[session_id].messages.append(AIMessage(initial_message))
 
 def test_is_session_id(session_id):
     return session_id in store
 
-# @app.post("/query")
-# async def query_data(query: Query):
-#     if not test_is_session_id(query.session_id):
-#         return {"error": "Session not found."}
-#     result = conversational_rag_chain.invoke(
-#         {"input": query.question},
-#         config={
-#             "configurable": {"session_id": query.session_id},
-#         },
-#     )
-#     return {
-#         "response": result['answer'],
-#     }
+def serialize_message(message):
+    if isinstance(message, AIMessage):
+        return {
+            'type': 'bot',
+            'content': message.content
+        }
+    elif isinstance(message, HumanMessage):
+        return {
+            'type': 'user',
+            'content': message.content
+        }
+    else:
+        raise TypeError(f"Unsupported message type: {type(message)}")
 
-@sio.event
-async def query(sid, query):
-    if not test_is_session_id(query['session_id']):
+def get_session_history(session_id):
+    if not test_is_session_id(session_id):
         return {"error": "Session not found."}
+    messages = store[session_id].messages
+    return [serialize_message(msg) for msg in messages]
+
+async def query_bot(query):
     result = conversational_rag_chain.invoke(
         {"input": query['question']},
         config={
             "configurable": {"session_id": query['session_id']},
         },
     )
+    return result['answer']
+
+@sio.event
+async def query(sid, query):
+    if not test_is_session_id(query['session_id']):
+        await sio.emit('error', {'message': 'Session not found.'}, room=sid)
+        return
+    result = await query_bot(query)
     await sio.emit('response', result['answer'], room=sid)  
 
-# @app.get("/init_session")
-# async def init_session():
-#     session_id = str(uuid.uuid4())
-#     add_initial_message(session_id, BotInitMessage)
-#     return {
-#         "session_id": session_id,
-#         "initial_message": BotInitMessage,
-#     }
+@sio.event
+async def connect(sid, environ):
+    print(f"connect {sid}")
 
 @sio.event
 async def init(sid):
-    session_id = str(uuid.uuid4())
+    session_id = create_new_session()
     add_initial_message(session_id, BotInitMessage)
-    await sio.emit('init', {'session_id': session_id, 'initial_message': BotInitMessage}, room=sid)
+    await sio.emit('session_init', {'session_id': session_id, 'initial_message': BotInitMessage}, room=sid)
 
 @sio.event
 async def close_session(sid, session_id):
@@ -181,15 +193,20 @@ async def close_session(sid, session_id):
         # TODO: save session history in database
         await sio.emit('session_closed', {'session_id': session_id}, room=sid)
 
-@app.get("/get_session_history/{session_id}")
-async def get_session_history(session_id: str):
-    if not test_is_session_id(session_id):
-        return {"error": "Session not found."}
+@sio.event
+async def restore_session(sid, data):
+    session_id = data.get('session_id')
+    if session_id in store:
+        messages = get_session_history(session_id)
+        await sio.emit('session_restored', {'session_id': session_id, 'chat_history': messages}, room=sid)
     else:
-        return {
-            "session_id": session_id,
-            "chat_history": store[session_id].messages,
-        }
+        session_id = str(uuid.uuid4())
+        add_initial_message(session_id, BotInitMessage)
+        await sio.emit('session_init', {'session_id': session_id, 'initial_message': BotInitMessage}, room=sid)
+
+@app.get("/get_session_history/{session_id}")
+async def get_history(session_id: str):
+    return get_session_history(session_id)
 
 @app.get("/")
 async def read_root():
