@@ -8,3 +8,4 @@ matplotlib
 chromadb
 python-dotenv
 sentence-transformers
+python-socketio
