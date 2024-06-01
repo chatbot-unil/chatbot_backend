@@ -7,8 +7,6 @@ from dotenv import load_dotenv
 import chromadb
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain_text_splitters import CharacterTextSplitter
-from langchain.schema import Document
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
@@ -80,7 +78,7 @@ async def lifespan(app: FastAPI):
 
     document_chain = create_stuff_documents_chain(llm, prompt)
     retrieval_chain = create_retrieval_chain(history_retriever, document_chain)
-
+    
     store = {}
 
     def get_session_history(session_id: str) -> BaseChatMessageHistory:
@@ -170,7 +168,7 @@ async def query(sid, query):
         return
     result = query_bot(query)
     await sio.emit('response', result, room=sid)
-
+    
 @sio.event
 async def connect(sid, environ):
     print(f"connect {sid}")

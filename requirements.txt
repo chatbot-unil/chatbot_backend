@@ -2,6 +2,7 @@ fastapi
 uvicorn
 langchain-community
 langchain-openai
+langgraph
 llama-index
 openai
 matplotlib
