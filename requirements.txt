@@ -10,3 +10,4 @@ chromadb
 python-dotenv
 sentence-transformers
 python-socketio
+langchainhub

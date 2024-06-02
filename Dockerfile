@@ -8,8 +8,10 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 COPY .env .env
-COPY main.py main.py
+COPY app.py app.py
+COPY config.py config.py
+COPY chatbot chatbot
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app_asgi", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app_asgi", "--host", "0.0.0.0", "--port", "8000"]
