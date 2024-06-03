@@ -3,7 +3,7 @@ from langchain_community.vectorstores import Chroma
 from .embeddings import initialize_embeddings
 
 class Retriever:
-    def __init__(self, embedding_model="text-embedding-3-small", chroma_host=None, chroma_port=None, collection_name=None, description=None):
+    def __init__(self, chroma_host=None, chroma_port=None, collection_name=None, description=None):
         self.embedding_function = initialize_embeddings()
         self.chroma_host = chroma_host
         self.chroma_port = chroma_port

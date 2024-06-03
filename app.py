@@ -10,14 +10,38 @@ from chatbot.retrieval import Retriever
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    retriever = Retriever(
+    retriever_students_automne = Retriever(
         chroma_host=Config.CHROMADB_HOST,
         chroma_port=Config.CHROMADB_PORT,
-        collection_name=Config.COLLECTION_NAME,
-        description="Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne. Il permet de répondre à des questions concernant les inscriptions étudiants de l'Université de Lausanne. par faculté, par sexe, par nationalité de 2011 à 2021."
+        collection_name="students_autumn",
+        description= (
+            "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
+            "Il permet de répondre à des questions concernant les inscriptions étudiants de l'Université de Lausanne. par faculté, par sexe, par nationalité de 2011 à 2021."
+            "Il permet aussi de répondre à des qestions concernant les Étudiant·e·s inscrit·e·s au semestre d’automne par faculté selon le lieu de domicile avant les études de 2011 à 2021"
+        )
+    )
+    demographics_retriever = Retriever(
+        chroma_host=Config.CHROMADB_HOST,
+        chroma_port=Config.CHROMADB_PORT,
+        collection_name="demographics_and_population",
+        description= (
+            "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
+            "Il permet de répondre à des questions concernant des données démographiques et de population pour le canton de Vaud et la Suisse. Ces données on été fournies par l'Office fédéral de la statistique."
+        )
+    )
+    acronyms_retriever = Retriever(
+        chroma_host=Config.CHROMADB_HOST,
+        chroma_port=Config.CHROMADB_PORT,
+        collection_name="abbreviations_and_acronyms",
+        description= (
+            "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
+            "Il contient des abréviations et acronymes utilisés dans l'annuaire statistique de l'Université de Lausanne."
+        )
     )
     tools = Tools()
-    tools.add_retriever(retriever)
+    tools.add_retriever(retriever_students_automne)
+    tools.add_retriever(demographics_retriever)
+    tools.add_retriever(acronyms_retriever)
     global agent
     agent = Agent(system_prompt=Config.SYSTEM_PROMPT, init_message=Config.BOT_INIT_MESSAGE, tools=tools)
     yield
