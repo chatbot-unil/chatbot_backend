@@ -7,6 +7,8 @@ from config import Config
 from chatbot.agent import Agent
 from chatbot.tools import Tools
 from chatbot.retrieval import Retriever
+from chatbot.session import HumanMessage
+from chatbot.session import AIMessage
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,7 +45,7 @@ async def lifespan(app: FastAPI):
     tools.add_retriever(demographics_retriever)
     tools.add_retriever(acronyms_retriever)
     global agent
-    agent = Agent(system_prompt=Config.SYSTEM_PROMPT, init_message=Config.BOT_INIT_MESSAGE, tools=tools)
+    agent = Agent(system_prompt=Config.SYSTEM_PROMPT, init_message=Config.BOT_INIT_MESSAGE, tools=tools, stream=Config.USE_STREAM)
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -68,9 +70,23 @@ async def query(sid, query):
     if not agent.test_is_session_id(query['session_id']):
         await sio.emit('error', {'message': 'Session not found.'}, room=sid)
         return
-    result = agent.query(query['question'], query['session_id'])
-    print(result)
-    await sio.emit('response', result['output'], room=sid)
+    agent.session_manager.get_session_history(query['session_id']).messages.append(HumanMessage(content=query['question']))
+    output = []
+    if Config.USE_STREAM:
+        await sio.emit('response_start', True, room=sid)
+        await sio.emit('response_is_stream', True, room=sid)
+        async for result in agent.query_stream(query['question'], query['session_id']):
+            output.append(result)
+            await sio.emit('response', result, room=sid)
+        await sio.emit('response_end', True, room=sid)
+    else:
+        await sio.emit('response_start', True, room=sid)
+        await sio.emit('response_is_stream', False, room=sid)
+        result = agent.query_invoke(query['question'], query['session_id'])
+        await sio.emit('response', result['output'], room=sid)
+        output.append(result['output'])
+        await sio.emit('response_end', True, room=sid)
+    agent.session_manager.get_session_history(query['session_id']).messages.append(AIMessage(content=output))
 
 @sio.event
 async def connect(sid, environ):
