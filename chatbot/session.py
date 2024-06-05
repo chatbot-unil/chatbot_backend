@@ -31,6 +31,18 @@ class SessionManager:
     def test_is_session_id(self, session_id):
         return session_id in self.store
 
+    def add_user_message(self, session_id, message):
+        if not self.test_is_session_id(session_id):
+            return False
+        self.store[session_id].add_user_message(message)
+        return True
+    
+    def add_ai_message(self, session_id, message):
+        if not self.test_is_session_id(session_id):
+            return False
+        self.store[session_id].add_ai_message(message)
+        return True
+
     def serialize_message(self, message):
         if isinstance(message, AIMessage):
             return {

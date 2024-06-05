@@ -7,21 +7,29 @@ from config import Config
 from chatbot.agent import Agent
 from chatbot.tools import Tools
 from chatbot.retrieval import Retriever
-from chatbot.session import HumanMessage
-from chatbot.session import AIMessage
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    retriever_students_automne = Retriever(
+    students_autumn_faculty_nationality_sex = Retriever(
         chroma_host=Config.CHROMADB_HOST,
         chroma_port=Config.CHROMADB_PORT,
-        collection_name="students_autumn",
+        collection_name="students_autumn_faculty_nationality_sex",
         description= (
             "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
             "Il permet de répondre à des questions concernant les inscriptions étudiants de l'Université de Lausanne. par faculté, par sexe, par nationalité de 2011 à 2021."
-            "Il permet aussi de répondre à des qestions concernant les Étudiant·e·s inscrit·e·s au semestre d’automne par faculté selon le lieu de domicile avant les études de 2011 à 2021"
-        )
+        ),
+        search_kwargs={"k": 10}
     )
+    students_autumn_faculty_domicile = Retriever(
+        chroma_host=Config.CHROMADB_HOST,
+        chroma_port=Config.CHROMADB_PORT,
+        collection_name="students_autumn_faculty_domicile",
+        description= (
+			"Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
+			"Il permet de répondre à des questions concernant les inscriptions étudiants de l'Université de Lausanne. par faculté, selon le domicile avant l'inscription de 2011 à 2021."
+		),
+        search_kwargs={"k": 10}
+	)
     demographics_retriever = Retriever(
         chroma_host=Config.CHROMADB_HOST,
         chroma_port=Config.CHROMADB_PORT,
@@ -29,7 +37,9 @@ async def lifespan(app: FastAPI):
         description= (
             "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
             "Il permet de répondre à des questions concernant des données démographiques et de population pour le canton de Vaud et la Suisse. Ces données on été fournies par l'Office fédéral de la statistique."
-        )
+            "Il comprend aussi des données sur les néssances 20 ans auparavant pour le canton de Vaud et la Suisse."
+        ),
+        search_kwargs={"k": 10}
     )
     acronyms_retriever = Retriever(
         chroma_host=Config.CHROMADB_HOST,
@@ -38,10 +48,12 @@ async def lifespan(app: FastAPI):
         description= (
             "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
             "Il contient des abréviations et acronymes utilisés dans l'annuaire statistique de l'Université de Lausanne."
-        )
+        ),
+        search_kwargs={"k": 10}
     )
     tools = Tools()
-    tools.add_retriever(retriever_students_automne)
+    tools.add_retriever(students_autumn_faculty_nationality_sex)
+    tools.add_retriever(students_autumn_faculty_domicile)
     tools.add_retriever(demographics_retriever)
     tools.add_retriever(acronyms_retriever)
     global agent
@@ -70,23 +82,16 @@ async def query(sid, query):
     if not agent.test_is_session_id(query['session_id']):
         await sio.emit('error', {'message': 'Session not found.'}, room=sid)
         return
-    agent.session_manager.get_session_history(query['session_id']).messages.append(HumanMessage(content=query['question']))
-    output = []
     if Config.USE_STREAM:
         await sio.emit('response_start', True, room=sid)
-        await sio.emit('response_is_stream', True, room=sid)
         async for result in agent.query_stream(query['question'], query['session_id']):
-            output.append(result)
             await sio.emit('response', result, room=sid)
         await sio.emit('response_end', True, room=sid)
     else:
         await sio.emit('response_start', True, room=sid)
-        await sio.emit('response_is_stream', False, room=sid)
         result = agent.query_invoke(query['question'], query['session_id'])
         await sio.emit('response', result['output'], room=sid)
-        output.append(result['output'])
         await sio.emit('response_end', True, room=sid)
-    agent.session_manager.get_session_history(query['session_id']).messages.append(AIMessage(content=output))
 
 @sio.event
 async def connect(sid, environ):
