@@ -10,6 +10,8 @@ from chatbot.retrieval import Retriever
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    k = 30
+    s_type = "similarity"
     students_autumn_faculty_nationality_sex = Retriever(
         chroma_host=Config.CHROMADB_HOST,
         chroma_port=Config.CHROMADB_PORT,
@@ -17,8 +19,12 @@ async def lifespan(app: FastAPI):
         description= (
             "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
             "Il permet de répondre à des questions concernant les inscriptions étudiants de l'Université de Lausanne. par faculté, par sexe, par nationalité de 2011 à 2021."
+            "la structure TOTAL_STUDENT_UNIL représente le nombre total d'étudiant inscrit à l'Université de Lausanne par année."
+            "Les données de nationalité ne sont pas disponibles par sexe, elles concernent uniquement le total des étudiants."
+            "Les données de sexe ne sont pas disponibles par nationalité, elles concernent uniquement le total des étudiants."
         ),
-        search_kwargs={"k": 10}
+        search_kwargs={"k": k},
+        search_type=s_type
     )
     students_autumn_faculty_domicile = Retriever(
         chroma_host=Config.CHROMADB_HOST,
@@ -27,8 +33,10 @@ async def lifespan(app: FastAPI):
         description= (
 			"Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
 			"Il permet de répondre à des questions concernant les inscriptions étudiants de l'Université de Lausanne. par faculté, selon le domicile avant l'inscription de 2011 à 2021."
+            "la structure TOTAL_STUDENT_UNIL représente le nombre total d'étudiant inscrit à l'Université de Lausanne par année."
 		),
-        search_kwargs={"k": 10}
+        search_kwargs={"k": k},
+        search_type=s_type
 	)
     demographics_retriever = Retriever(
         chroma_host=Config.CHROMADB_HOST,
@@ -39,7 +47,8 @@ async def lifespan(app: FastAPI):
             "Il permet de répondre à des questions concernant des données démographiques et de population pour le canton de Vaud et la Suisse. Ces données on été fournies par l'Office fédéral de la statistique."
             "Il comprend aussi des données sur les néssances 20 ans auparavant pour le canton de Vaud et la Suisse."
         ),
-        search_kwargs={"k": 10}
+        search_kwargs={"k": k},
+        search_type=s_type
     )
     acronyms_retriever = Retriever(
         chroma_host=Config.CHROMADB_HOST,
@@ -49,7 +58,8 @@ async def lifespan(app: FastAPI):
             "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
             "Il contient des abréviations et acronymes utilisés dans l'annuaire statistique de l'Université de Lausanne."
         ),
-        search_kwargs={"k": 10}
+        search_kwargs={"k": k},
+        search_type=s_type
     )
     tools = Tools()
     tools.add_retriever(students_autumn_faculty_nationality_sex)
