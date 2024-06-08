@@ -31,6 +31,10 @@ class Retriever:
     
     def get_retriver(self):
         return self.retriever
+    
+    def add_document(self, document):
+        # TODO: Add document to the collection
+        return None
 
 # Exemple d'utilisation:
 # retriever = Retriever(chroma_host="host", chroma_port=8000, collection_name="my_collection")

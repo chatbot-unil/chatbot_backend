@@ -7,66 +7,30 @@ from config import Config
 from chatbot.agent import Agent
 from chatbot.tools import Tools
 from chatbot.retrieval import Retriever
+from database import Database
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    k = 30
-    s_type = "similarity"
-    students_autumn_faculty_nationality_sex = Retriever(
-        chroma_host=Config.CHROMADB_HOST,
-        chroma_port=Config.CHROMADB_PORT,
-        collection_name="students_autumn_faculty_nationality_sex",
-        description= (
-            "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
-            "Il permet de répondre à des questions concernant les inscriptions étudiants de l'Université de Lausanne. par faculté, par sexe, par nationalité de 2011 à 2021."
-            "la structure TOTAL_STUDENT_UNIL représente le nombre total d'étudiant inscrit à l'Université de Lausanne par année."
-            "Les données de nationalité ne sont pas disponibles par sexe, elles concernent uniquement le total des étudiants."
-            "Les données de sexe ne sont pas disponibles par nationalité, elles concernent uniquement le total des étudiants."
-        ),
-        search_kwargs={"k": k},
-        search_type=s_type
-    )
-    students_autumn_faculty_domicile = Retriever(
-        chroma_host=Config.CHROMADB_HOST,
-        chroma_port=Config.CHROMADB_PORT,
-        collection_name="students_autumn_faculty_domicile",
-        description= (
-			"Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
-			"Il permet de répondre à des questions concernant les inscriptions étudiants de l'Université de Lausanne. par faculté, selon le domicile avant l'inscription de 2011 à 2021."
-            "la structure TOTAL_STUDENT_UNIL représente le nombre total d'étudiant inscrit à l'Université de Lausanne par année."
-		),
-        search_kwargs={"k": k},
-        search_type=s_type
-	)
-    demographics_retriever = Retriever(
-        chroma_host=Config.CHROMADB_HOST,
-        chroma_port=Config.CHROMADB_PORT,
-        collection_name="demographics_and_population",
-        description= (
-            "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
-            "Il permet de répondre à des questions concernant des données démographiques et de population pour le canton de Vaud et la Suisse. Ces données on été fournies par l'Office fédéral de la statistique."
-            "Il comprend aussi des données sur les néssances 20 ans auparavant pour le canton de Vaud et la Suisse."
-        ),
-        search_kwargs={"k": k},
-        search_type=s_type
-    )
-    acronyms_retriever = Retriever(
-        chroma_host=Config.CHROMADB_HOST,
-        chroma_port=Config.CHROMADB_PORT,
-        collection_name="abbreviations_and_acronyms",
-        description= (
-            "Ce retriever est basé sur une base de données de statistiques de l'Université de Lausanne."
-            "Il contient des abréviations et acronymes utilisés dans l'annuaire statistique de l'Université de Lausanne."
-        ),
-        search_kwargs={"k": k},
-        search_type=s_type
-    )
     tools = Tools()
-    tools.add_retriever(students_autumn_faculty_nationality_sex)
-    tools.add_retriever(students_autumn_faculty_domicile)
-    tools.add_retriever(demographics_retriever)
-    tools.add_retriever(acronyms_retriever)
     global agent
+    db = Database(
+        dbname=Config.POSTGRES_DB,
+        user=Config.POSTGRES_USER,
+        password=Config.POSTGRES_PASSWORD,
+        host=Config.POSTGRES_HOST,
+        port=Config.POSTGRES_PORT
+    )
+    retrivals = db.get_all_collections()
+    for retrival in retrivals:
+        retriver = Retriever(
+            chroma_host=retrival['host'],
+            chroma_port=retrival['port'],
+            collection_name=retrival['collection'],
+            description=retrival['description'],
+            search_kwargs={"k": 30},
+            search_type="similarity"
+        )
+        tools.add_retriever(retriver)
     agent = Agent(system_prompt=Config.SYSTEM_PROMPT, init_message=Config.BOT_INIT_MESSAGE, tools=tools, stream=Config.USE_STREAM)
     yield
 

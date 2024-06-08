@@ -7,9 +7,9 @@ RUN apt-get update && apt-get install -y curl
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-COPY .env .env
 COPY app.py app.py
 COPY config.py config.py
+COPY database.py database.py
 COPY chatbot chatbot
 
 EXPOSE 8000

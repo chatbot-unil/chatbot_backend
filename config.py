@@ -27,3 +27,8 @@ class Config:
         Tu n'as pas encore accès au données concernant le niveau d'étude des étudiants.
         Et tu n'as pas accès aux données concernant le personnel de l'Université.
     """
+    POSTGRES_USER = os.getenv('POSTGRES_USER')
+    POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+    POSTGRES_DB = os.getenv('POSTGRES_DB')
+    POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
+    POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
