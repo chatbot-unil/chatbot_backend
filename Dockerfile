@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.12.0
 
 WORKDIR /app
 
@@ -9,7 +9,6 @@ RUN pip install -r requirements.txt
 
 COPY app.py app.py
 COPY config.py config.py
-COPY database.py database.py
 COPY chatbot chatbot
 
 EXPOSE 8000

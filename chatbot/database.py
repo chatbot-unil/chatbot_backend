@@ -76,8 +76,30 @@ class Database:
 	def create_chat_history_table(self):
 		if not self.test_if_table_exists(self.chat_history_table_name):
 			PostgresChatMessageHistory.create_tables(self.conn, self.chat_history_table_name)
+			return True
+		return False
 
-	def create_chat_history(self, session_id, initial_message):
-		client = PostgresChatMessageHistory(self.chat_history_table_name, session_id, self.conn)
-		self.add_ai_message(session_id, initial_message)
-		return client
+	def test_if_chat_history_exists(self, session_id):
+		with self.conn.cursor() as cursor:
+			cursor.execute(f"SELECT EXISTS (SELECT 1 FROM {self.chat_history_table_name} WHERE session_id = %s)", (session_id,))
+			if cursor.fetchone()[0]:
+				return True
+			return False
+	
+	def init_chat_history(self, session_id):
+		if not self.test_if_chat_history_exists(session_id):
+			PostgresChatMessageHistory(self.chat_history_table_name, session_id, sync_connection=self.conn)
+
+	def insert_chat_messages(self, session_id, messages):
+		chat_history = PostgresChatMessageHistory(self.chat_history_table_name, session_id, sync_connection=self.conn)
+		chat_history.clear()
+		chat_history.add_messages(messages)
+
+	def get_chat_messages(self, session_id):
+		chat_history = PostgresChatMessageHistory(self.chat_history_table_name, session_id, sync_connection=self.conn)
+		return chat_history
+	
+	def print_chat_history_shema(self):
+		with self.conn.cursor() as cursor:
+			cursor.execute(f"SELECT * FROM {self.chat_history_table_name} LIMIT 0")
+			print(cursor.description)

@@ -7,12 +7,13 @@ from config import Config
 from chatbot.agent import Agent
 from chatbot.tools import Tools
 from chatbot.retrieval import Retriever
-from database import Database
+from chatbot.database import Database
+from chatbot.session import SessionManager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global db, agent, session_manager
     tools = Tools()
-    global agent
     db = Database(
         dbname=Config.POSTGRES_DB,
         user=Config.POSTGRES_USER,
@@ -31,7 +32,11 @@ async def lifespan(app: FastAPI):
             search_type="similarity"
         )
         tools.add_retriever(retriver)
-    agent = Agent(system_prompt=Config.SYSTEM_PROMPT, init_message=Config.BOT_INIT_MESSAGE, tools=tools, stream=Config.USE_STREAM)
+    is_created = db.create_chat_history_table()
+    print(f"Chat history table created: {is_created}")
+    db.print_chat_history_shema()
+    session_manager = SessionManager(initial_message=Config.BOT_INIT_MESSAGE)
+    agent = Agent(system_prompt=Config.SYSTEM_PROMPT, init_message=Config.BOT_INIT_MESSAGE, tools=tools, stream=Config.USE_STREAM, session_get_func=session_manager.get_session_history)
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -53,7 +58,7 @@ class Query(BaseModel):
 
 @sio.event
 async def query(sid, query):
-    if not agent.test_is_session_id(query['session_id']):
+    if not session_manager.test_is_session_id(query['session_id']):
         await sio.emit('error', {'message': 'Session not found.'}, room=sid)
         return
     if Config.USE_STREAM:
@@ -70,30 +75,41 @@ async def query(sid, query):
 @sio.event
 async def connect(sid, environ):
     print(f"connect {sid}")
+    
+@sio.event
+async def disconnect(sid):
+    await handle_disconnect(sid)
+    print(f"disconnect {sid}")
+
+async def handle_disconnect(sid):
+    session_id = session_manager.sid_to_session.get(sid)
+    if session_id:
+        if session_manager.test_is_session_id(session_id):
+            messages = session_manager.get_session_history(session_id).messages
+            if not db.test_if_chat_history_exists(session_id):
+                db.init_chat_history(session_id)
+            db.insert_chat_messages(session_id, messages)
+        session_manager.remove_sid_mapping(sid)
 
 @sio.event
 async def init(sid):
-    session_id = agent.create_new_session()
+    session_id = session_manager.create_new_session(sid)
     await sio.emit('session_init', {'session_id': session_id, 'initial_message': agent.system_prompt}, room=sid)
-
-@sio.event
-async def close_session(sid, session_id):
-    agent.delete_session(session_id)
-    await sio.emit('session_closed', {'session_id': session_id}, room=sid)
-
+    
 @sio.event
 async def restore_session(sid, data):
     session_id = data.get('session_id')
-    if agent.test_is_session_id(session_id):
-        messages = agent.get_session_messages(session_id)
+    if session_manager.test_is_session_id(session_id):
+        messages = session_manager.get_session_messages(session_id)
+        session_manager.map_sid_to_session(sid, session_id)
         await sio.emit('session_restored', {'session_id': session_id, 'chat_history': messages}, room=sid)
     else:
-        session_id = agent.create_new_session()
+        session_id = session_manager.create_new_session(sid)
         await sio.emit('session_init', {'session_id': session_id, 'initial_message': agent.system_prompt}, room=sid)
 
 @app.get("/get_session_history/{session_id}")
 async def get_history(session_id: str):
-    return agent.get_session_messages(session_id)
+    return session_manager.get_session_messages(session_id)
 
 @app.get("/")
 async def read_root():
