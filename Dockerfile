@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.12.0
 
 WORKDIR /app
 
@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y curl
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-COPY .env .env
 COPY app.py app.py
 COPY config.py config.py
 COPY chatbot chatbot

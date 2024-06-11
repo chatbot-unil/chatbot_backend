@@ -1,6 +1,4 @@
 from langchain.tools.retriever import create_retriever_tool
-from langchain_core.tools import Tool
-
 class Tools:
     def __init__(self):
         self.retrievers = []
@@ -9,7 +7,7 @@ class Tools:
         return self.retrievers
 
     def add_retriever(self, retriever):
-        description = getattr(retriever, 'description', None) or "No description provided"
+        description = getattr(retriever, 'description', None) or "Aucune description"
         
         tool = create_retriever_tool(
             retriever.get_retriver(),
@@ -23,3 +21,7 @@ class Tools:
             if retriever.name == name:
                 return retriever
         return None
+    
+    def print_retrievers(self):
+        for retriever in self.retrievers:
+            print(retriever)
