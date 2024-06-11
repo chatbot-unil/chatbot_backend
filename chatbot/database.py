@@ -1,105 +1,104 @@
 import psycopg
-from langchain_core.messages import SystemMessage, AIMessage, HumanMessage
 from langchain_postgres import PostgresChatMessageHistory
 
 class Database:
-	def __init__(self, dbname, user, password, host, port):
-		self.conn = psycopg.connect(
-			dbname=dbname,
-			user=user,
-			password=password,
-			host=host,
-			port=port
-		)
-		self.collection_table_name = 'collections'
-		self.chat_history_table_name = 'chat_history'
+    def __init__(self, dbname, user, password, host, port):
+        self.connect_url = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
+        self.collection_table_name = 'collections'
+        self.chat_history_table_name = 'chat_history'
+    
+    async def connect(self):
+        return await psycopg.AsyncConnection.connect(self.connect_url)
 
-	def insert_collection(self, collection_name, description, host, port, hash_, last_update):
-		with self.conn.cursor() as cursor:
-			cursor.execute("""
-				INSERT INTO collections (collection_name, desc_collection, host, port, hash_collection, last_update)
-				VALUES (%s, %s, %s, %s, %s, %s)
-			""", (collection_name, description, host, port, hash_, last_update))
-			self.conn.commit()
-			
-	def update_collection(self, collection_name, description, host, port, hash_, last_update):
-		with self.conn.cursor() as cursor:
-			cursor.execute("""
-				UPDATE collections
-				SET desc_collection = %s, host = %s, port = %s, hash_collection = %s, last_update = %s
-				WHERE collection_name = %s
-			""", (description, host, port, hash_, last_update, collection_name))
-			self.conn.commit()
+    async def insert_collection(self, collection_name, description, host, port, hash_, last_update):
+        async with await self.connect() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("""
+                    INSERT INTO collections (collection_name, desc_collection, host, port, hash_collection, last_update)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, (collection_name, description, host, port, hash_, last_update))
+                await conn.commit()
+            
+    async def update_collection(self, collection_name, description, host, port, hash_, last_update):
+        async with await self.connect() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("""
+                    UPDATE collections
+                    SET desc_collection = %s, host = %s, port = %s, hash_collection = %s, last_update = %s
+                    WHERE collection_name = %s
+                """, (description, host, port, hash_, last_update, collection_name))
+                await conn.commit()
 
-	def get_all_collections(self):
+    async def get_all_collections(self):
+        async with await self.connect() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT collection_name FROM collections")
+                collections = await cursor.fetchall()
+                json_collections = []
+                for collection in collections:
+                    json_collections.append(
+                        await self.get_collection(collection[0])
+                    )
+                return json_collections
+    
+    async def get_collection(self, collection_name):
+        async with await self.connect() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT * FROM collections WHERE collection_name = %s", (collection_name,))
+                collection = await cursor.fetchone()
+                return {
+                    "id" : collection[0],
+                    "collection": collection[1],
+                    "description": collection[2],
+                    "host": collection[3],
+                    "port": collection[4],
+                    "hash": collection[5],
+                    "last_update": collection[6]
+                }
+        
+    async def delete_collection(self, collection_name):
+        async with await self.connect() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("DELETE FROM collections WHERE collection_name = %s", (collection_name,))
+                await conn.commit()
+    
+    async def test_if_table_exists(self, table_name):
+        async with await self.connect() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(f"SELECT EXISTS ( SELECT 1 FROM information_schema.tables WHERE table_name = '{table_name}' )")
+                return (await cursor.fetchone())[0]
 
-		with self.conn.cursor() as cursor:
-			cursor.execute("SELECT collection_name FROM collections")
-			collections = cursor.fetchall()
-			json_collections = []
-			for collection in collections:
-				json_collections.append(
-					self.get_collection(collection[0])
-				)
-			return json_collections
-	
-	def get_collection(self, collection_name):
-		with self.conn.cursor() as cursor:
-			cursor.execute("SELECT * FROM collections WHERE collection_name = %s", (collection_name,))
-			collection = cursor.fetchone()
-			return {
-				"id" : collection[0],
-				"collection": collection[1],
-				"description": collection[2],
-				"host": collection[3],
-				"port": collection[4],
-				"hash": collection[5],
-				"last_update": collection[6]
-			}
-		
-	def delete_collection(self, collection_name):
-		with self.conn.cursor() as cursor:
-			cursor.execute("DELETE FROM collections WHERE collection_name = %s", (collection_name,))
-			self.conn.commit()
-	
-	def test_if_table_exists(self, table_name):
-		with self.conn.cursor() as cursor:
-			cursor.execute("""
-				SELECT EXISTS (
-					SELECT 1
-					FROM information_schema.tables
-					WHERE table_name = %s
-				)
-			""", (table_name,))
-			return cursor.fetchone()[0]
+    async def create_chat_history_table(self):
+        if not await self.test_if_table_exists(self.chat_history_table_name):
+            async with await self.connect() as conn:
+                await PostgresChatMessageHistory.acreate_tables(conn, self.chat_history_table_name)
+                return True
+        return False
+    
+    async def test_if_chat_history_exists(self, session_id):
+        async with await self.connect() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(f"SELECT EXISTS (SELECT 1 FROM {self.chat_history_table_name} WHERE session_id = %s)", (session_id,))
+                return (await cursor.fetchone())[0]
+    
+    async def init_chat_history(self, session_id):
+        if not await self.test_if_table_exists(self.chat_history_table_name):
+            async with await self.connect() as conn:
+                PostgresChatMessageHistory(self.chat_history_table_name, session_id, async_connection=conn)
 
-	def create_chat_history_table(self):
-		if not self.test_if_table_exists(self.chat_history_table_name):
-			PostgresChatMessageHistory.create_tables(self.conn, self.chat_history_table_name)
-			return True
-		return False
+    async def insert_chat_messages(self, session_id, messages):
+        async with await self.connect() as conn:
+            chat_history = PostgresChatMessageHistory(self.chat_history_table_name, session_id, async_connection=conn)
+            await chat_history.aclear()
+            await chat_history.aadd_messages(messages)
 
-	def test_if_chat_history_exists(self, session_id):
-		with self.conn.cursor() as cursor:
-			cursor.execute(f"SELECT EXISTS (SELECT 1 FROM {self.chat_history_table_name} WHERE session_id = %s)", (session_id,))
-			if cursor.fetchone()[0]:
-				return True
-			return False
-	
-	def init_chat_history(self, session_id):
-		if not self.test_if_chat_history_exists(session_id):
-			PostgresChatMessageHistory(self.chat_history_table_name, session_id, sync_connection=self.conn)
-
-	def insert_chat_messages(self, session_id, messages):
-		chat_history = PostgresChatMessageHistory(self.chat_history_table_name, session_id, sync_connection=self.conn)
-		chat_history.clear()
-		chat_history.add_messages(messages)
-
-	def get_chat_messages(self, session_id):
-		chat_history = PostgresChatMessageHistory(self.chat_history_table_name, session_id, sync_connection=self.conn)
-		return chat_history
-	
-	def print_chat_history_shema(self):
-		with self.conn.cursor() as cursor:
-			cursor.execute(f"SELECT * FROM {self.chat_history_table_name} LIMIT 0")
-			print(cursor.description)
+    async def get_chat_messages(self, session_id):
+        async with await self.connect() as conn:
+            chat_history = PostgresChatMessageHistory(self.chat_history_table_name, session_id, async_connection=conn)
+            return await chat_history.aget_messages()
+    
+    async def print_chat_history_shema(self):
+        async with await self.connect() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(f"SELECT * FROM {self.chat_history_table_name} LIMIT 0")
+                print(cursor.description)

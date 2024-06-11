@@ -21,3 +21,7 @@ class Tools:
             if retriever.name == name:
                 return retriever
         return None
+    
+    def print_retrievers(self):
+        for retriever in self.retrievers:
+            print(retriever)

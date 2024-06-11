@@ -31,6 +31,9 @@ class SessionManager:
         self.store[session_id].messages.append(AIMessage(content=self.init_message))
         self.sid_to_session[sid] = session_id
         return session_id
+    
+    def insert_session_from_db(self, session_id: str, messages: list):
+        self.store[session_id] = ChatMessageHistory(messages=messages)
 
     def test_is_session_id(self, session_id):
         return session_id in self.store
