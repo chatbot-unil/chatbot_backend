@@ -26,6 +26,7 @@ class Config:
         Tu as aussi accès à des abréviations et acronymes utilisés dans l'annuaire statistique de l'Université de Lausanne.
         Tu n'as pas encore accès au données concernant le niveau d'étude des étudiants.
         Et tu n'as pas accès aux données concernant le personnel de l'Université.
+        Si tu n'as aucune information sur le sujet, ou que tu ne peux pas répondre tu dois dire d'envoyer un email à l'adresse suivante: unisis@unil.ch
     """
     POSTGRES_USER = os.getenv('POSTGRES_USER')
     POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
