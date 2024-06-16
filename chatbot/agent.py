@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 from typing import List
+from .config import Config
 
 class LineGraph(BaseModel):
     year: List[int] = Field(..., description="La liste des années pour créer le graphique.")
@@ -49,8 +50,10 @@ def create_line_graph(year: List[int], data: List[List[int]], labels: List[str],
     filepath = os.path.join(directory, f'{timestamp}.png')
     plt.savefig(filepath)
     plt.close()
-    
-    return f"http://localhost:3001/graph/{timestamp}.png"
+
+    public_ip = Config.PUBLIC_IP
+
+    return f"http://{public_ip}:3001/graph/{timestamp}.png"
 
 
 class BarGraph(BaseModel):
@@ -93,8 +96,10 @@ def create_bar_graph(categories: List[str], values: List[List[float]], labels: L
     filepath = os.path.join(directory, f'{timestamp}.png')
     plt.savefig(filepath)
     plt.close()
+    
+    public_ip = Config.PUBLIC_IP
 
-    return f"http://localhost:3001/graph/{timestamp}.png"
+    return f"http://{public_ip}:3001/graph/{timestamp}.png"
 
 # TODO: Tool bug to fix
 # class ProportionGraph(BaseModel):

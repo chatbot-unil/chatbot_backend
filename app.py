@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import socketio
 from pydantic import BaseModel
-from config import Config
+from chatbot.config import Config
 from chatbot.agent import Agent
 from chatbot.tools import Tools
 from chatbot.retrieval import Retriever
