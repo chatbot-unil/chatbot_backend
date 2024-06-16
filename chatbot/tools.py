@@ -1,7 +1,14 @@
 from langchain.tools.retriever import create_retriever_tool
+from enum import Enum
+
+class ToolType(Enum):
+    RETRIEVER = "retriever"
+    FUNCTION = "function"
+
 class Tools:
     def __init__(self):
         self.retrievers = []
+        self.functions = []
 
     def get_retrievers(self):
         return self.retrievers

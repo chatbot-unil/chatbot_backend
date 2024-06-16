@@ -9,6 +9,7 @@ from chatbot.tools import Tools
 from chatbot.retrieval import Retriever
 from chatbot.database import Database
 from chatbot.session import SessionManager
+from fastapi.staticfiles import StaticFiles
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,13 +33,17 @@ async def lifespan(app: FastAPI):
             search_type="similarity"
         )
         tools.add_retriever(retriver)
-    
     tools.print_retrievers()
     is_created = await db.create_chat_history_table()
     print(f"Chat history table created: {is_created}")
     await db.print_chat_history_shema()
     session_manager = SessionManager(initial_message=Config.BOT_INIT_MESSAGE)
-    agent = Agent(system_prompt=Config.SYSTEM_PROMPT, init_message=Config.BOT_INIT_MESSAGE, tools=tools, stream=Config.USE_STREAM, session_get_func=session_manager.get_session_history)
+    agent = Agent(
+        system_prompt=Config.SYSTEM_PROMPT, 
+        init_message=Config.BOT_INIT_MESSAGE,
+        tools=tools, stream=Config.USE_STREAM, 
+        session_get_func=session_manager.get_session_history
+    )
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -50,6 +55,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/graph", StaticFiles(directory="graph"), name="graph")
 
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 app_asgi = socketio.ASGIApp(sio, app)
@@ -93,7 +100,7 @@ async def disconnect(sid):
 @sio.event
 async def init(sid):
     session_id = session_manager.create_new_session(sid)
-    await sio.emit('session_init', {'session_id': session_id, 'initial_message': agent.system_prompt}, room=sid)
+    await sio.emit('session_init', {'session_id': session_id, 'initial_message': agent.init_message}, room=sid)
     
 @sio.event
 async def restore_session(sid, data):
@@ -110,7 +117,7 @@ async def restore_session(sid, data):
         await sio.emit('session_restored', {'session_id': session_id, 'chat_history': messages}, room=sid)
     else:
         session_id = session_manager.create_new_session(sid)
-        await sio.emit('session_init', {'session_id': session_id, 'initial_message': agent.system_prompt}, room=sid)
+        await sio.emit('session_init', {'session_id': session_id, 'initial_message': agent.init_message}, room=sid)
 
 @app.get("/get_session_history/{session_id}")
 async def get_history(session_id: str):
