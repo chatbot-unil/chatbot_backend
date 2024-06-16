@@ -11,21 +11,3 @@ services:
         condition: service_completed_successfully
       chromadb:
         condition: service_started
-    environment:
-      - BOT_INIT_MESSAGE=Bonjour, je suis le chatbot de l'Université de Lausanne. Comment puis-je vous aider ?
-      - CHROMADB_PORT=8000
-      - CHROMADB_HOST=chromadb
-      - CHROMADB_COLLECTION_NAME=students_autumn
-      - USE_STREAM=True
-      - OPENAI_API_KEY=$OPENAI_API_KEY
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-      - POSTGRES_DB=$POSTGRES_DB
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-    networks:
-      - net
-
-networks:
-  net:
-    external: true

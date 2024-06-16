@@ -8,8 +8,8 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 COPY app.py app.py
-COPY config.py config.py
 COPY chatbot chatbot
+COPY graph graph
 
 EXPOSE 8000
 

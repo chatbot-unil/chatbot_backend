@@ -2,7 +2,6 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.messages import AIMessage, HumanMessage
 import uuid
-from .database import Database
 from typing import Optional
 
 class SessionManager:
