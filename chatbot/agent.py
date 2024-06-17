@@ -20,7 +20,7 @@ class LineGraph(BaseModel):
     title: str = Field(..., description="Le titre du graphique. (en français) est obligatoire.")
     x_label: str = Field(..., description="L'étiquette de l'axe des x. (en français) est obligatoire.")
     y_label: str = Field(..., description="L'étiquette de l'axe des y. (en français) est obligatoire.")
-    is_start_zero: bool = Field(False, description="Définir si l'axe des y doit commencer à zéro. Par défaut, False.")
+    is_start_zero: bool = Field(..., description="Définir si l'axe des y doit commencer à zéro. Par défaut, False. est obligatoire.")
 
 @tool("create_line_graph", args_schema=LineGraph)
 def create_line_graph(year: List[int], data: List[List[int]], labels: List[str], title: str, x_label: str, y_label: str, is_start_zero: bool):
