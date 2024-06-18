@@ -14,4 +14,3 @@ langchainhub
 psycopg[binary]
 langchain-postgres
 langchain_experimental
-pycairo
