@@ -6,7 +6,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import tool
 import matplotlib
-matplotlib.use('cairo')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import time
 import os
