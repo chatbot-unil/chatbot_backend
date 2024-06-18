@@ -42,7 +42,7 @@ def create_line_graph(year: List[int], data: List[List[int]], labels: List[str],
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.legend()
-    plt.grid(True)
+    plt.grid(True, axis='y')
 
     year_str = '-'.join([str(i) for i in year])
     data_str = '-'.join(['-'.join([str(i) for i in series]) for series in data])
@@ -55,7 +55,7 @@ def create_line_graph(year: List[int], data: List[List[int]], labels: List[str],
    
     file_path = os.path.join(directory, f'{file_name}.png')
     if not os.path.exists(file_path):
-        plt.savefig(file_path)
+        plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
     return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
@@ -91,7 +91,7 @@ def create_bar_graph(categories: List[str], values: List[List[float]], labels: L
     plt.ylabel(y_label)
     plt.xticks([p + bar_width * (len(values) - 1) / 2 for p in x], categories)
     plt.legend()
-    plt.grid(True)
+    plt.grid(True, axis='y')
 
     categories_str = '-'.join(categories)
     values_str = '-'.join(['-'.join([str(i) for i in series]) for series in values])
@@ -104,7 +104,7 @@ def create_bar_graph(categories: List[str], values: List[List[float]], labels: L
     
     file_path = os.path.join(directory, f'{file_name}.png')
     if not os.path.exists(file_path):
-        plt.savefig(file_path)
+        plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
     return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
