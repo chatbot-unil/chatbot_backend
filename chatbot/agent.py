@@ -6,7 +6,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import tool
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('cairo')
 import matplotlib.pyplot as plt
 import time
 import os
@@ -54,8 +54,7 @@ def create_line_graph(year: List[int], data: List[List[int]], labels: List[str],
         os.makedirs(directory)
    
     file_path = os.path.join(directory, f'{file_name}.png')
-    if not os.path.exists(file_path):
-        plt.savefig(file_path, bbox_inches='tight')
+    plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
     return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
@@ -103,8 +102,7 @@ def create_bar_graph(categories: List[str], values: List[List[float]], labels: L
         os.makedirs(directory)
     
     file_path = os.path.join(directory, f'{file_name}.png')
-    if not os.path.exists(file_path):
-        plt.savefig(file_path, bbox_inches='tight')
+    plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
     return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
