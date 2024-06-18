@@ -12,6 +12,7 @@ import time
 import os
 from typing import List
 from .config import Config
+import hashlib
 
 class LineGraph(BaseModel):
     year: List[int] = Field(..., description="La liste des années pour créer le graphique.")
@@ -20,7 +21,7 @@ class LineGraph(BaseModel):
     title: str = Field(..., description="Le titre du graphique. (en français) est obligatoire.")
     x_label: str = Field(..., description="L'étiquette de l'axe des x. (en français) est obligatoire.")
     y_label: str = Field(..., description="L'étiquette de l'axe des y. (en français) est obligatoire.")
-    is_start_zero: bool = Field(..., description="Définir si l'axe des y doit commencer à zéro. Par défaut, False. est obligatoire.")
+    is_start_zero: bool = Field(..., description="Définir si l'axe des y doit commencer à zéro.")
 
 @tool("create_line_graph", args_schema=LineGraph)
 def create_line_graph(year: List[int], data: List[List[int]], labels: List[str], title: str, x_label: str, y_label: str, is_start_zero: bool):
@@ -43,18 +44,21 @@ def create_line_graph(year: List[int], data: List[List[int]], labels: List[str],
     plt.legend()
     plt.grid(True)
 
-    timestamp = str(time.time())
+    year_str = '-'.join([str(i) for i in year])
+    data_str = '-'.join(['-'.join([str(i) for i in series]) for series in data])
+    label_str = '-'.join(labels)
+    file_name_non_hashed = f'{year_str}-{data_str}-{label_str}-{title}-{x_label}-{y_label}-{is_start_zero}'
+    file_name = hashlib.sha256(file_name_non_hashed.encode()).hexdigest()
     directory = 'graph'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    filepath = os.path.join(directory, f'{timestamp}.png')
-    plt.savefig(filepath)
+   
+    file_path = os.path.join(directory, f'{file_name}.png')
+    if not os.path.exists(file_path):
+        plt.savefig(file_path)
     plt.close()
 
-    public_ip = Config.PUBLIC_IP
-
-    return f"http://{public_ip}:3001/graph/{timestamp}.png"
-
+    return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
 
 class BarGraph(BaseModel):
     categories: List[str] = Field(..., description="Les catégories pour le graphique en barres.")
@@ -63,7 +67,7 @@ class BarGraph(BaseModel):
     title: str = Field(..., description="Le titre du graphique. (en français)")
     x_label: str = Field(..., description="L'étiquette de l'axe des x. (en français)")
     y_label: str = Field(..., description="L'étiquette de l'axe des y. (en français)")
-    is_start_zero: bool = Field(True, description="Définir si l'axe des y doit commencer à zéro. Par défaut, True.")
+    is_start_zero: bool = Field(..., description="Définir si l'axe des y doit commencer à zéro.")
 
 @tool("create_bar_graph", args_schema=BarGraph)
 def create_bar_graph(categories: List[str], values: List[List[float]], labels: List[str], title: str, x_label: str, y_label: str, is_start_zero: bool):
@@ -89,17 +93,21 @@ def create_bar_graph(categories: List[str], values: List[List[float]], labels: L
     plt.legend()
     plt.grid(True)
 
-    timestamp = str(time.time())
+    categories_str = '-'.join(categories)
+    values_str = '-'.join(['-'.join([str(i) for i in series]) for series in values])
+    labels_str = '-'.join(labels)
+    file_name_non_hashed = f'{categories_str}-{values_str}-{labels_str}-{title}-{x_label}-{y_label}-{is_start_zero}'
+    file_name = hashlib.sha256(file_name_non_hashed.encode()).hexdigest()
     directory = 'graph'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    filepath = os.path.join(directory, f'{timestamp}.png')
-    plt.savefig(filepath)
-    plt.close()
     
-    public_ip = Config.PUBLIC_IP
+    file_path = os.path.join(directory, f'{file_name}.png')
+    if not os.path.exists(file_path):
+        plt.savefig(file_path)
+    plt.close()
 
-    return f"http://{public_ip}:3001/graph/{timestamp}.png"
+    return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
 
 # TODO: Tool bug to fix
 # class ProportionGraph(BaseModel):

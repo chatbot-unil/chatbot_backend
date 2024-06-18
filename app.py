@@ -126,3 +126,7 @@ async def get_history(session_id: str):
 @app.get("/")
 async def read_root():
     return {"message": "Bienvenue sur l'API du chatbot de l'Université de Lausanne."}
+
+@app.get("/health")
+async def health():
+	return {"status": "ok"}
