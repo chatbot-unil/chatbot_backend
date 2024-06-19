@@ -8,12 +8,11 @@ from langchain.tools import tool
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import time
 import os
 from typing import List
 from .config import Config
 import hashlib
-
+import math
 
 class LineGraph(BaseModel):
     year: List[int] = Field(..., description="La liste des années pour créer le graphique.")
@@ -143,12 +142,27 @@ class PieGraphSubplots(BaseModel):
 @tool("create_pie_graph_w_subplots", args_schema=PieGraphSubplots)
 async def create_pie_graph_w_subplots(labels: List[List[str]], sizes: List[List[float]], title: str, subplots_titles: List[str]):
     """Ce tool permet de créer un graphique de proportions à partir des données fournies avec des sous-graphiques si plusieurs séries de données sont fournies."""
-    fig, axs = plt.subplots(1, len(labels), figsize=(15, 8))
+    num_plots = len(labels)
+    max_cols = 3
+    num_rows = math.ceil(num_plots / max_cols)
+    num_cols = min(num_plots, max_cols)
+
+    fig, axs = plt.subplots(num_rows, num_cols, figsize=(5 * num_cols, 5 * num_rows))
     fig.suptitle(title)
+    
     for i, (label, size) in enumerate(zip(labels, sizes)):
-        axs[i].pie(size, labels=label, autopct='%1.1f%%', startangle=140)
-        axs[i].axis('equal')
-        axs[i].set_title(subplots_titles[i])
+        row = i // max_cols
+        col = i % max_cols
+        ax = axs[row, col] if num_rows > 1 else axs[col]
+        ax.pie(size, labels=label, autopct='%1.1f%%', startangle=140)
+        ax.axis('equal')
+        ax.set_title(subplots_titles[i])
+
+    for j in range(num_plots, num_rows * num_cols):
+        row = j // max_cols
+        col = j % max_cols
+        ax = axs[row, col] if num_rows > 1 else axs[col]
+        ax.axis('off')
 
     labels_str = '-'.join(['-'.join(label) for label in labels])
     sizes_str = '-'.join(['-'.join([str(i) for i in size]) for size in sizes])
