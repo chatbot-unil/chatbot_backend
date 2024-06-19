@@ -14,6 +14,7 @@ from typing import List
 from .config import Config
 import hashlib
 
+
 class LineGraph(BaseModel):
     year: List[int] = Field(..., description="La liste des années pour créer le graphique.")
     data: List[List[int]] = Field(..., description="La liste des séries de données pour créer le graphique.")
@@ -24,7 +25,7 @@ class LineGraph(BaseModel):
     is_start_zero: bool = Field(..., description="Définir si l'axe des y doit commencer à zéro.")
 
 @tool("create_line_graph", args_schema=LineGraph)
-def create_line_graph(year: List[int], data: List[List[int]], labels: List[str], title: str, x_label: str, y_label: str, is_start_zero: bool):
+async def create_line_graph(year: List[int], data: List[List[int]], labels: List[str], title: str, x_label: str, y_label: str, is_start_zero: bool):
     """Ce tool permet de créer un graphique en courbe à partir des données fournies."""
 
     plt.figure(figsize=(10, 5))
@@ -69,7 +70,7 @@ class BarGraph(BaseModel):
     is_start_zero: bool = Field(..., description="Définir si l'axe des y doit commencer à zéro.")
 
 @tool("create_bar_graph", args_schema=BarGraph)
-def create_bar_graph(categories: List[str], values: List[List[float]], labels: List[str], title: str, x_label: str, y_label: str, is_start_zero: bool):
+async def create_bar_graph(categories: List[str], values: List[List[float]], labels: List[str], title: str, x_label: str, y_label: str, is_start_zero: bool):
     """Ce tool permet de créer un graphique en barres à partir des données fournies."""
 
     plt.figure(figsize=(10, 5))
@@ -106,30 +107,63 @@ def create_bar_graph(categories: List[str], values: List[List[float]], labels: L
     plt.close()
 
     return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
+class PieGraph(BaseModel):
+    labels: List[str] = Field(..., description="Les étiquettes pour chaque proportion.")
+    sizes: List[float] = Field(..., description="Les proportions correspondantes.")
+    title: str = Field(..., description="Le titre du graphique. (en français)")
 
-# TODO: Tool bug to fix
-# class ProportionGraph(BaseModel):
-#     labels: List[str] = Field(..., description="Les étiquettes pour chaque proportion.")
-#     sizes: List[float] = Field(..., description="Les proportions correspondantes.")
-#     title: str = Field(..., description="Le titre du graphique. (en français)")
+@tool("create_pie_graph", args_schema=PieGraph)
+async def create_pie_graph(labels: List[str], sizes: List[float], title: str):
+    """Ce tool permet de créer un graphique de proportions à partir des données fournies."""
+    plt.figure(figsize=(8, 8))
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
+    plt.title(title)
+    plt.axis('equal')
 
-# @tool("create_proportion_graph", args_schema=ProportionGraph)
-# def create_proportion_graph(labels: List[str], sizes: List[float], title: str):
-#     """Ce tool permet de créer un graphique de proportions à partir des données fournies."""
-#     plt.figure(figsize=(8, 8))
-#     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
-#     plt.title(title)
-#     plt.axis('equal')
+    labels_str = '-'.join(labels)
+    sizes_str = '-'.join([str(i) for i in sizes])
+    file_name_non_hashed = f'{labels_str}-{sizes_str}-{title}'
+    file_name = hashlib.sha256(file_name_non_hashed.encode()).hexdigest()
+    directory = 'graph'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        
+    file_path = os.path.join(directory, f'{file_name}.png')
+    plt.savefig(file_path, bbox_inches='tight')
+    plt.close()
 
-#     timestamp = str(time.time())
-#     directory = 'graph'
-#     if not os.path.exists(directory):
-#         os.makedirs(directory)
-#     filepath = os.path.join(directory, f'{timestamp}.png')
-#     plt.savefig(filepath)
-#     plt.close()
+    return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
 
-#     return f"http://localhost:3001/graph/{timestamp}.png"
+class PieGraphSubplots(BaseModel):
+    labels: List[List[str]] = Field(..., description="Les étiquettes pour chaque proportion. (une liste de listes)")
+    sizes: List[List[float]] = Field(..., description="Les proportions correspondantes. (une liste de listes)")
+    title: str = Field(..., description="Le titre du graphique. (en français)")
+    subplots_titles: List[str] = Field(..., description="Les titres pour chaque sous-graphique.")
+
+@tool("create_pie_graph_w_subplots", args_schema=PieGraphSubplots)
+async def create_pie_graph_w_subplots(labels: List[List[str]], sizes: List[List[float]], title: str, subplots_titles: List[str]):
+    """Ce tool permet de créer un graphique de proportions à partir des données fournies avec des sous-graphiques si plusieurs séries de données sont fournies."""
+    fig, axs = plt.subplots(1, len(labels), figsize=(15, 8))
+    fig.suptitle(title)
+    for i, (label, size) in enumerate(zip(labels, sizes)):
+        axs[i].pie(size, labels=label, autopct='%1.1f%%', startangle=140)
+        axs[i].axis('equal')
+        axs[i].set_title(subplots_titles[i])
+
+    labels_str = '-'.join(['-'.join(label) for label in labels])
+    sizes_str = '-'.join(['-'.join([str(i) for i in size]) for size in sizes])
+    file_name_non_hashed = f'{labels_str}-{sizes_str}-{title}'
+    file_name = hashlib.sha256(file_name_non_hashed.encode()).hexdigest()
+    directory = 'graph'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    file_path = os.path.join(directory, f'{file_name}.png')
+    plt.savefig(file_path, bbox_inches='tight')
+    plt.close()
+
+    return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
+
 
 class Agent:
 
@@ -146,7 +180,7 @@ class Agent:
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
         ])
-        self.toolkit = [create_line_graph, create_bar_graph]
+        self.toolkit = [create_line_graph, create_bar_graph, create_proportion_graph, create_proportion_graph_w_subplots]
         for retriever in self.tools.get_retrievers():
             self.toolkit.append(retriever)
         self.agent = create_tool_calling_agent(self.llm, tools=self.toolkit, prompt=self.prompt)
