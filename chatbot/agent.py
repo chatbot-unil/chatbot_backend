@@ -180,7 +180,7 @@ class Agent:
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
         ])
-        self.toolkit = [create_line_graph, create_bar_graph, create_proportion_graph, create_proportion_graph_w_subplots]
+        self.toolkit = [create_line_graph, create_bar_graph, create_pie_graph, create_pie_graph_w_subplots]
         for retriever in self.tools.get_retrievers():
             self.toolkit.append(retriever)
         self.agent = create_tool_calling_agent(self.llm, tools=self.toolkit, prompt=self.prompt)
