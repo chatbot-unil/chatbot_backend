@@ -57,7 +57,7 @@ async def create_line_graph(year: List[int], data: List[List[int]], labels: List
     plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
-    return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
+    return f"http://{Config.DOMAIN_NAME}/graph/{file_name}.png"
 
 class BarGraph(BaseModel):
     categories: List[str] = Field(..., description="Les catégories pour le graphique en barres.")
@@ -105,7 +105,7 @@ async def create_bar_graph(categories: List[str], values: List[List[float]], lab
     plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
-    return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
+    return f"http://{Config.DOMAIN_NAME}/graph/{file_name}.png"
 class PieGraph(BaseModel):
     labels: List[str] = Field(..., description="Les étiquettes pour chaque proportion.")
     sizes: List[float] = Field(..., description="Les proportions correspondantes.")
@@ -131,7 +131,7 @@ async def create_pie_graph(labels: List[str], sizes: List[float], title: str):
     plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
-    return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
+    return f"http://{Config.DOMAIN_NAME}/graph/{file_name}.png"
 
 class PieGraphSubplots(BaseModel):
     labels: List[List[str]] = Field(..., description="Les étiquettes pour chaque proportion. (une liste de listes)")
@@ -176,7 +176,7 @@ async def create_pie_graph_w_subplots(labels: List[List[str]], sizes: List[List[
     plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
-    return f"http://{Config.PUBLIC_IP}:3001/graph/{file_name}.png"
+    return f"http://{Config.DOMAIN_NAME}/graph/{file_name}.png"
 
 
 class Agent:

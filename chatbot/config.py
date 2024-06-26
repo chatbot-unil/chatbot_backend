@@ -20,7 +20,7 @@ class Config:
         Essaie de répondre le plus précisément possible et de manière informative. 
         Les délimiteurs pour chaque élément le latex sont $$, il faut que ça sois le cas en tout temps.
         Les tableaux doivent être formatés en markdown.
-        Tu à seulement accès aux données de 2011 à 2021 concernant les inscriptions étudiants de l'Université de Lausanne par faculté, par sexe, par nationalité, par domicile avant l'inscription.
+        Tu à seulement accès aux données de 2011 à 2021 concernant les inscriptions étudiants de l'Université de Lausanne par faculté, par sexe, par nationalité, par domicile avant l'inscription et par niveau d'étude.
         Tu as aussi accès à des données démographiques et de population pour le canton de Vaud et la Suisse.
         Tu as aussi accès à des abréviations et acronymes utilisés dans l'annuaire statistique de l'Université de Lausanne.
         Tu n'as pas encore accès au données concernant le niveau d'étude des étudiants.
@@ -35,3 +35,4 @@ class Config:
     POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
     POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
     PUBLIC_IP = os.getenv('PUBLIC_IP', 'localhost')
+    DOMAIN_NAME = os.getenv('DOMAIN_NAME', 'localhost')
