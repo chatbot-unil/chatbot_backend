@@ -107,15 +107,9 @@ async def init(sid, data):
     if not user_uuid:
         await sio.emit('error', {'message': 'User UUID is required.'}, room=sid)
         return
-
     session_id = session_manager.create_new_session(sid)
     await db.add_session(user_uuid, session_id)
     await sio.emit('session_init', {'session_id': session_id, 'initial_message': agent.init_message}, room=sid)
-
-@sio.event
-async def create_user(sid):
-    user_uuid = await db.create_user()
-    await sio.emit('create_user', {'user_uuid': user_uuid}, room=sid)
     
 @sio.event
 async def restore_session(sid, data):
@@ -161,6 +155,11 @@ async def get_user(user_uuid: str):
         return {"user_exists": True}
     else:
         return {"user_exists": False}
+    
+@app.get("/create_user")
+async def create_user():
+    user_uuid = await db.create_user()
+    return {"user_uuid": user_uuid}
 
 @app.get("/")
 async def read_root():
