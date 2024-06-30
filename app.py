@@ -156,7 +156,7 @@ async def get_user(user_uuid: str):
     else:
         return {"user_exists": False}
     
-@app.get("/create_user")
+@app.post("/create_user")
 async def create_user():
     user_uuid = await db.create_user()
     return {"user_uuid": user_uuid}
