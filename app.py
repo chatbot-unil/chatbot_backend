@@ -10,7 +10,6 @@ from chatbot.retrieval import Retriever
 from chatbot.database import Database
 from chatbot.session import SessionManager
 from fastapi.staticfiles import StaticFiles
-from fastapi.exceptions import HTTPException
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

@@ -156,5 +156,5 @@ class Database:
     async def get_sessions(self, user_uuid):
         async with await self.connect() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT session_id FROM sessions_users WHERE user_uuid = %s", (user_uuid,))
+                await cursor.execute("SELECT session_id FROM sessions_users WHERE user_uuid = %s ORDER BY creation_date ASC", (user_uuid,))
                 return await cursor.fetchall()
