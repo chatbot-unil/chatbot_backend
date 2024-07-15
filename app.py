@@ -160,10 +160,6 @@ async def create_user():
     user_uuid = await db.create_user()
     return {"user_uuid": user_uuid}
 
-@app.get("/")
-async def read_root():
-    return {"message": "Bienvenue sur l'API du chatbot de l'Université de Lausanne."}
-
 @app.get("/health")
 async def health():
     return {"status": "ok"}
