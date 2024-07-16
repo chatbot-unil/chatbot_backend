@@ -224,7 +224,10 @@ class Agent:
             config={
                 "configurable": {
                     "session_id": session_id
-                }
+                },
+                "metadata": {
+					"session_id": session_id
+				}
             }
         )
     
@@ -236,7 +239,10 @@ class Agent:
             config={
                 "configurable": {
                     "session_id": session_id
-                }
+                },
+                "metadata": {
+					"session_id": session_id
+				}
             },
             version="v2"
         ) :
