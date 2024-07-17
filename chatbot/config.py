@@ -36,3 +36,4 @@ class Config:
     POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
     PUBLIC_IP = os.getenv('PUBLIC_IP', 'localhost')
     DOMAIN_NAME = os.getenv('DOMAIN_NAME', 'localhost')
+    ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', '*').split(',')

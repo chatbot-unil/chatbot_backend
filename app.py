@@ -50,7 +50,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=Config.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -58,7 +58,10 @@ app.add_middleware(
 
 app.mount("/graph", StaticFiles(directory="graph"), name="graph")
 
-sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
+sio = socketio.AsyncServer(
+    async_mode='asgi', 
+    cors_allowed_origins=Config.ALLOWED_ORIGINS
+)
 app_asgi = socketio.ASGIApp(sio, app)
 
 class Query(BaseModel):
