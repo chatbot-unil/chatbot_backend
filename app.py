@@ -130,24 +130,24 @@ async def restore_session(sid, data):
         session_id = session_manager.create_new_session(sid)
         await sio.emit('session_init', {'session_id': session_id, 'initial_message': agent.init_message}, room=sid)
 
-@app.post("/query")
+@app.post("/api/v1/query")
 async def query(query: Query):
     if not session_manager.test_is_session_id(query.session_id):
         return {'message': 'Session not found.'}
     return agent.query_invoke(query.question, query.session_id)
 
-@app.get("/get_user_sessions/{user_uuid}")
+@app.get("/api/v1/get_user_sessions/{user_uuid}")
 async def get_user_sessions(user_uuid: str):
     sessions = await db.get_sessions(user_uuid)
     if not sessions:
         return {"session_ids": []}
     return {"session_ids": sessions}
 
-@app.get("/get_session_history/{session_id}")
+@app.get("/api/v1/get_session_history/{session_id}")
 async def get_history(session_id: str):
     return session_manager.get_session_messages(session_id)
 
-@app.get("/check_user_exists/{user_uuid}")
+@app.get("/api/v1/check_user_exists/{user_uuid}")
 async def get_user(user_uuid: str):
     user = await db.test_if_user_exists(user_uuid)
     if user:
@@ -155,11 +155,11 @@ async def get_user(user_uuid: str):
     else:
         return {"user_exists": False}
     
-@app.post("/create_user")
+@app.post("/api/v1/create_user")
 async def create_user():
     user_uuid = await db.create_user()
     return {"user_uuid": user_uuid}
 
-@app.get("/health")
+@app.get("/api/v1/health")
 async def health():
     return {"status": "ok"}
