@@ -59,11 +59,11 @@ app.add_middleware(
 app.mount("/graph", StaticFiles(directory="graph"), name="graph")
 
 sio = socketio.AsyncServer(
-    async_mode='asgi', 
+    async_mode='asgi',
     cors_allowed_origins=Config.ALLOWED_ORIGINS
 )
-app_asgi = socketio.ASGIApp(sio, app)
 
+app_asgi = socketio.ASGIApp(sio, app)
 class Query(BaseModel):
     question: str
     session_id: str
