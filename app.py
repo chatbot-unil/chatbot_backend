@@ -64,6 +64,7 @@ sio = socketio.AsyncServer(
 )
 
 app_asgi = socketio.ASGIApp(sio, app)
+
 class Query(BaseModel):
     question: str
     session_id: str
