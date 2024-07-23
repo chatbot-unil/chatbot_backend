@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
             search_type="similarity"
         )
         tools.add_retriever(retriver)
-    tools.print_retrievers()
+    tools.print_all_tools()
     is_created = await db.create_chat_history_table()
     print(f"Chat history table created: {is_created}")
     await db.print_chat_history_schema()
@@ -44,23 +44,13 @@ async def lifespan(app: FastAPI):
         tools=tools, stream=Config.USE_STREAM, 
         session_get_func=session_manager.get_session_history
     )
+    app.mount("/graph", StaticFiles(directory="graph"), name="graph")
     yield
 
 app = FastAPI(lifespan=lifespan)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=Config.ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.mount("/graph", StaticFiles(directory="graph"), name="graph")
-
 sio = socketio.AsyncServer(
-    async_mode='asgi',
-    cors_allowed_origins=Config.ALLOWED_ORIGINS
+    async_mode='asgi'
 )
 
 app_asgi = socketio.ASGIApp(sio, app)
