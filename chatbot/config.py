@@ -20,8 +20,11 @@ class Config:
         Essaie de répondre le plus précisément possible et de manière informative. 
         Les délimiteurs pour chaque élément le latex sont $$, il faut que ça sois le cas en tout temps.
         Les tableaux doivent être formatés en markdown.
-        Tu as accès à des données sur les étudiants de l'Université de Lausanne.
-    	Tu as accès au données concernant le niveau d'étude des étudiants.
+        Pour toute les recherches tu dois utiliser les mots clés pour trouver les informations. SOIS PRÉCIS et verbeux. si ce n'est pas le cas tu dois dire que tu n'as pas trouvé l'information.
+        Tu as accès à des données sur les étudiants de l'Université de Lausanne. 
+        Les nom des faculté ne sont pas écrite en accronyme mais en entier. <- C'est important.
+        Il y à plusieurs tools pour ça par différents indicateurs.
+        Sois sur que tu utilises les bons tools pour répondre à la question.
         Et tu as accès aux données concernant le personnel de l'Université de Lauanne. 
         Tu as accès aux donnée sur la couverture des dépenses de l'UNIL pour le budget ordinaire et les contributions financières de l'UNIL.
         Les contributions financières sont divisées en plusieurs catégories, notamment les contributions provenant des autres cantons, le financement de l’État de Vaud, les revenus générés par les étudiants, les formations continues et les congrès, les contributions du programme LEHE (anciennement LAU), les fonds comptabilisés comme montants neutralisés, les autres revenus divers, les subventions accordées au CHUV, les subventions destinées à l’EPGL, les subventions allouées à la PMU (Unisanté), le total des comptes de l’Université de Lausanne (UNIL), et le total des statistiques financières.
@@ -38,3 +41,5 @@ class Config:
     PUBLIC_IP = os.getenv('PUBLIC_IP', 'localhost')
     DOMAIN_NAME = os.getenv('DOMAIN_NAME', 'localhost')
     ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', '*').split(',')
+    GRAPH_DIRECTORY = 'graph'
+    FULL_GRAPH_DIRECTORY = f'http://{DOMAIN_NAME}/{GRAPH_DIRECTORY}'

@@ -45,15 +45,14 @@ async def create_line_graph(year: List[int], data: List[List[int]], labels: List
     label_str = '-'.join(labels)
     file_name_non_hashed = f'{year_str}-{data_str}-{label_str}-{title}-{x_label}-{y_label}-{is_start_zero}'
     file_name = hashlib.sha256(file_name_non_hashed.encode()).hexdigest()
-    directory = 'graph'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(Config.GRAPH_DIRECTORY):
+        os.makedirs(Config.GRAPH_DIRECTORY)
    
-    file_path = os.path.join(directory, f'{file_name}.png')
+    file_path = os.path.join(Config.GRAPH_DIRECTORY, f'{file_name}.png')
     plt.savefig(file_path, bbox_inches='tight')
     plt.close()
-
-    return f"http://{Config.DOMAIN_NAME}/graph/{file_name}.png"
+    
+    return f"{Config.FULL_GRAPH_DIRECTORY}/{file_name}.png"
 
 class BarGraph(BaseModel):
     categories: List[str] = Field(..., description="Les catégories pour le graphique en barres.")
@@ -93,15 +92,14 @@ async def create_bar_graph(categories: List[str], values: List[List[float]], lab
     labels_str = '-'.join(labels)
     file_name_non_hashed = f'{categories_str}-{values_str}-{labels_str}-{title}-{x_label}-{y_label}-{is_start_zero}'
     file_name = hashlib.sha256(file_name_non_hashed.encode()).hexdigest()
-    directory = 'graph'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(Config.GRAPH_DIRECTORY):
+        os.makedirs(Config.GRAPH_DIRECTORY)
     
-    file_path = os.path.join(directory, f'{file_name}.png')
+    file_path = os.path.join(Config.GRAPH_DIRECTORY, f'{file_name}.png')
     plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
-    return f"http://{Config.DOMAIN_NAME}/graph/{file_name}.png"
+    return f"{Config.FULL_GRAPH_DIRECTORY}/{file_name}.png"
 class PieGraph(BaseModel):
     labels: List[str] = Field(..., description="Les étiquettes pour chaque proportion.")
     sizes: List[float] = Field(..., description="Les proportions correspondantes.")
@@ -119,15 +117,14 @@ async def create_pie_graph(labels: List[str], sizes: List[float], title: str):
     sizes_str = '-'.join([str(i) for i in sizes])
     file_name_non_hashed = f'{labels_str}-{sizes_str}-{title}'
     file_name = hashlib.sha256(file_name_non_hashed.encode()).hexdigest()
-    directory = 'graph'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(Config.GRAPH_DIRECTORY):
+        os.makedirs(Config.GRAPH_DIRECTORY)
         
-    file_path = os.path.join(directory, f'{file_name}.png')
+    file_path = os.path.join(Config.GRAPH_DIRECTORY, f'{file_name}.png')
     plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
-    return f"http://{Config.DOMAIN_NAME}/graph/{file_name}.png"
+    return f"{Config.FULL_GRAPH_DIRECTORY}/{file_name}.png"
 
 class PieGraphSubplots(BaseModel):
     labels: List[List[str]] = Field(..., description="Les étiquettes pour chaque proportion. (une liste de listes)")
@@ -164,24 +161,23 @@ async def create_pie_graph_w_subplots(labels: List[List[str]], sizes: List[List[
     sizes_str = '-'.join(['-'.join([str(i) for i in size]) for size in sizes])
     file_name_non_hashed = f'{labels_str}-{sizes_str}-{title}'
     file_name = hashlib.sha256(file_name_non_hashed.encode()).hexdigest()
-    directory = 'graph'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(Config.GRAPH_DIRECTORY):
+        os.makedirs(Config.GRAPH_DIRECTORY)
 
-    file_path = os.path.join(directory, f'{file_name}.png')
+    file_path = os.path.join(Config.GRAPH_DIRECTORY, f'{file_name}.png')
     plt.savefig(file_path, bbox_inches='tight')
     plt.close()
 
-    return f"http://{Config.DOMAIN_NAME}/graph/{file_name}.png"
+    return f"{Config.FULL_GRAPH_DIRECTORY}/{file_name}.png"
 
 class Functions:
-	def __init__(self) -> None:
-		self.functions = [
-			create_line_graph,
-			create_bar_graph,
-			create_pie_graph,
-			create_pie_graph_w_subplots
-		]
+    def __init__(self) -> None:
+        self.functions = [
+            create_line_graph,
+            create_bar_graph,
+            create_pie_graph,
+            create_pie_graph_w_subplots
+        ]
     
-	def get_all_functions(self) -> List[BaseTool]:
-		return self.functions
+    def get_all_functions(self) -> List[BaseTool]:
+        return self.functions
