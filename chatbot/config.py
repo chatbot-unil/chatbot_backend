@@ -42,6 +42,6 @@ class Config:
     POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
     PUBLIC_IP = os.getenv('PUBLIC_IP', 'localhost')
     DOMAIN_NAME = os.getenv('DOMAIN_NAME', 'localhost')
-    ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', '*').split(',')
+    ALLOWED_ORIGINS = r"^(https?:\/\/chatbot\.unisis\.ch|http:\/\/localhost(:\d+)?)$"
     GRAPH_DIRECTORY = 'graph'
     FULL_GRAPH_DIRECTORY = f'http://{DOMAIN_NAME}/{GRAPH_DIRECTORY}'

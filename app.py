@@ -50,7 +50,7 @@ app = FastAPI(lifespan=lifespan)
 
 sio = socketio.AsyncServer(
     async_mode='asgi',
-    cors_allowed_origins=Config.ALLOWED_ORIGINS
+    cors_allowed_origins_regex=Config.ALLOWED_ORIGINS
 )
 
 app_asgi = socketio.ASGIApp(sio, app)
