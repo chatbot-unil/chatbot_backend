@@ -9,6 +9,7 @@ from chatbot.retrieval import Retriever
 from chatbot.database import Database
 from chatbot.session import SessionManager
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -47,6 +48,14 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+	allow_origin_regex=Config.ALLOWED_ORIGINS,
+	allow_credentials=True,
+	allow_methods=["*"],
+	allow_headers=["*"],
+)
 
 sio = socketio.AsyncServer(
     async_mode='asgi',
